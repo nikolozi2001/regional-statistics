@@ -3,7 +3,9 @@
         <div class="d-flex flex-column flex-md-row align-items-center justify-content-between mb-4">
             <!-- Brand Logo on the left -->
             <div id="brand-logo" class="me-3 mb-2 mb-md-0">
-                <img :src="logoSrc" alt="Brand Logo" class="img-fluid" />
+                <router-link :to="{ name: 'Home' }">
+                    <img :src="logoSrc" alt="Brand Logo" class="img-fluid" />
+                </router-link>
             </div>
             <!-- Page Title centered, with responsive text size and wrap control -->
             <h1 id="pagetitlename" class="tr mx-auto text-center text-md-nowrap mb-2 mb-md-0">
@@ -28,9 +30,9 @@
 
             <!-- Navigation Links with responsive wrapping -->
             <div class="d-flex flex-wrap justify-content-center justify-content-md-end">
-                <a class="btn header-btn me-2 mb-2" href="">
+                <router-link :to="{ name: 'RegionsCompare' }" class="btn header-btn me-2 mb-2">
                     {{ $t('comparison_regions') }}
-                </a>
+                </router-link>
 
                 <a class="btn header-btn me-2 mb-2" href="">
                     {{ $t('comparison_municipalities') }}

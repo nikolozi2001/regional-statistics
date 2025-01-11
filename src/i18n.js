@@ -27,6 +27,13 @@ const messages = {
     copyright2:
       "Its contents are the sole responsibility of the GEOSTAT and do not necessarily reflect the views of the European Union, Denmark and UNDP.",
     copyright3: "Terms of Use",
+
+    pageNotFound: "Page Not Found",
+    route: "Route",
+    notFound: "Not Found",
+    pageNotExist:
+      "The page you are looking for does not exist or has been moved.",
+    goToHome: "Go to Home",
   },
   ka: {
     title:
@@ -55,6 +62,12 @@ const messages = {
     copyright2:
       "ვებგვერდის შინაარსი შესაძლოა არ გამოხატავდეს ევროკავშირის, დანიისა და გაეროს განვითარების პროგრამის შეხედულებებს.",
     copyright3: "მონაცემთა გამოყენების პირობები",
+
+    pageNotFound: "გვერდი ვერ მოიძებნა",
+    route: "მარშრუტი",
+    notFound: "ვერ მოიძებნა",
+    pageNotExist: "თქვენ მიერ მოთხოვნილი გვერდი არ არსებობს ან გადატანილია.",
+    goToHome: "მთავარ გვერდზე დაბრუნება",
   },
 };
 
