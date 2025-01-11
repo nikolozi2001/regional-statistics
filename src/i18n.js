@@ -19,6 +19,8 @@ const messages = {
     areasqkm: "km²",
     thousand: "thousand",
     dollar: "USD",
+
+    empty: "",
   },
   ka: {
     title:
@@ -32,13 +34,15 @@ const messages = {
     POPULMSR: "მოსახლეობა:",
     GDPMSR: "მშპ-ს რეალური ზრდა:",
     CURMSR: "მშპ ერთ სულ მოსახლეზე:",
-    INFMSR: "ინფლაციის კოეფიციენტი:",
+    INFMSR: "ინფლაცია:",
     UNEMPMSR: "უმუშევრობის დონე:",
     BUSMSR: "რეგისტრირებული ეკონომიკური სუბიექტები:",
 
     areasqkm: "კმ²",
     thousand: "ათასი",
     dollar: "აშშ დოლარი",
+
+    empty: "",
   },
 };
 

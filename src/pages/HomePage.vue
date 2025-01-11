@@ -1,21 +1,14 @@
 <template>
-    <div class="container-fluid" id="textbox">
-        <div id="textbox1"><img class="indic-icons" src="/src/components/images/map-200-b.png" /><span
-                class="tr textboxspan1" Key="AREAMSR"> {{ $t('AREAMSR') }}
-                69 700 {{ $t('areasqkm') }}</span></div>
-        <div id="textbox2"><img class="indic-icons" src="/src/components/images/population-200-p.png" /><span
-                class="tr textboxspan2" Key="POPULMSR"> {{ $t('POPULMSR') }} 3 694.6 {{ $t('thousand') }}</span>
+    <div class="container-fluid">
+        <div id="textbox">
+            <div v-for="(box, index) in textboxes" :key="index" @mouseover="changeImageOnHover(index)"
+                @mouseleave="resetImage(index)">
+                <img :src="box.currentImage" class="indic-icons" />
+                <span class="tr" :style="{ color: box.currentSpanColor }">
+                    {{ $t(box.key) }} {{ box.text }} {{ $t(box.secondaryKey) }}
+                </span>
+            </div>
         </div>
-        <div id="textbox3"><img class="indic-icons" src="/src/components/images/line-chart-200-r.png" /><span
-                class="tr textboxspan3" Key="GDPMSR">{{ $t('GDPMSR') }} 11.0%</span></div>
-        <div id="textbox4"><img class="indic-icons" src="/src/components/images/user-200-y.png" /><span
-                class="tr textboxspan4" Key="CURMSR">{{ $t('CURMSR') }} 6731.2 {{ $t('dollar') }}</span></div>
-        <div id="textbox5"><img class="indic-icons" src="/src/components/images/area-chart-200-g.png" /><span
-                class="tr textboxspan5" Key="INFMSR">{{ $t('INFMSR') }} 0.6%</span></div>
-        <div id="textbox6"><img class="indic-icons" src="/src/components/images/pie-chart-200-b.png" /><span
-                class="tr textboxspan6" Key="UNEMPMSR">{{ $t('UNEMPMSR') }} 16.4%</span></div>
-        <div id="textbox7"><img class="indic-icons" src="/src/components/images/suitcase-200-p.png" /><span
-                class="tr textboxspan7" Key="BUSMSR">{{ $t('BUSMSR') }} 847 097</span></div>
     </div>
 
     <div class="container-fluid">
@@ -102,6 +95,104 @@
         </svg>
     </div>
 </template>
+
+<script>
+export default {
+    data() {
+        return {
+            textboxes: [
+                {
+                    originalImage: '/src/components/images/map-200-b.png',
+                    hoverImage: '/src/components/images/map-200-r.png',
+                    currentImage: '/src/components/images/map-200-b.png',
+                    key: 'AREAMSR',
+                    secondaryKey: 'areasqkm',
+                    text: '69 700',
+                    originalSpanColor: 'black',
+                    hoverSpanColor: 'red',
+                    currentSpanColor: 'black',
+                },
+                {
+                    originalImage: '/src/components/images/population-200-p.png',
+                    hoverImage: '/src/components/images/population-200-r.png',
+                    currentImage: '/src/components/images/population-200-p.png',
+                    key: 'POPULMSR',
+                    secondaryKey: 'thousand',
+                    text: '3 694.6',
+                    originalSpanColor: 'black',
+                    hoverSpanColor: 'red',
+                    currentSpanColor: 'black',
+                },
+                {
+                    originalImage: '/src/components/images/line-chart-200-r.png',
+                    hoverImage: '/src/components/images/line-chart-200-rr.png',
+                    currentImage: '/src/components/images/line-chart-200-r.png',
+                    key: 'GDPMSR',
+                    secondaryKey: 'empty',
+                    text: '11.0%',
+                    originalSpanColor: 'black',
+                    hoverSpanColor: 'red',
+                    currentSpanColor: 'black',
+                },
+                {
+                    originalImage: '/src/components/images/user-200-y.png',
+                    hoverImage: '/src/components/images/user-200-r.png',
+                    currentImage: '/src/components/images/user-200-y.png',
+                    key: 'CURMSR',
+                    secondaryKey: 'dollar',
+                    text: '6731.2',
+                    originalSpanColor: 'black',
+                    hoverSpanColor: 'red',
+                    currentSpanColor: 'black',
+                },
+                {
+                    originalImage: '/src/components/images/area-chart-200-g.png',
+                    hoverImage: '/src/components/images/area-chart-200-r.png',
+                    currentImage: '/src/components/images/area-chart-200-g.png',
+                    key: 'INFMSR',
+                    secondaryKey: 'empty',
+                    text: '0.6%',
+                    originalSpanColor: 'black',
+                    hoverSpanColor: 'red',
+                    currentSpanColor: 'black',
+                },
+                {
+                    originalImage: '/src/components/images/pie-chart-200-b.png',
+                    hoverImage: '/src/components/images/pie-chart-200-r.png',
+                    currentImage: '/src/components/images/pie-chart-200-b.png',
+                    key: 'UNEMPMSR',
+                    secondaryKey: 'empty',
+                    text: '16.4%',
+                    originalSpanColor: 'black',
+                    hoverSpanColor: 'red',
+                    currentSpanColor: 'black',
+                },
+                {
+                    originalImage: '/src/components/images/suitcase-200-p.png',
+                    hoverImage: '/src/components/images/suitcase-200-r.png',
+                    currentImage: '/src/components/images/suitcase-200-p.png',
+                    key: 'BUSMSR',
+                    secondaryKey: 'empty',
+                    text: '847 097',
+                    originalSpanColor: 'black',
+                    hoverSpanColor: 'red',
+                    currentSpanColor: 'black',
+                },
+            ],
+        };
+    },
+    methods: {
+        changeImageOnHover(index) {
+            this.textboxes[index].currentImage = this.textboxes[index].hoverImage;
+            this.textboxes[index].currentSpanColor = this.textboxes[index].hoverSpanColor;
+        },
+        resetImage(index) {
+            this.textboxes[index].currentImage = this.textboxes[index].originalImage;
+            this.textboxes[index].currentSpanColor = this.textboxes[index].originalSpanColor;
+        },
+    },
+};
+</script>
 
 <style scoped>
 #textbox {
