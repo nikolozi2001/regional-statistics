@@ -21,6 +21,12 @@ const messages = {
     dollar: "USD",
 
     empty: "",
+
+    copyright1:
+      "This website has been produced with the assistance of the European Union, Denmark and the United Nations Development Programme (UNDP).",
+    copyright2:
+      "Its contents are the sole responsibility of the GEOSTAT and do not necessarily reflect the views of the European Union, Denmark and UNDP.",
+    copyright3: "Terms of Use",
   },
   ka: {
     title:
@@ -43,6 +49,12 @@ const messages = {
     dollar: "აშშ დოლარი",
 
     empty: "",
+
+    copyright1:
+      "ვებგვერდი შექმნილია ევროკავშირის, დანიისა და გაეროს განვითარების პროგრამის მხარდაჭერით. მის შინაარსზე სრულად პასუხისმგებელია საქართველოს სტატისტიკის ეროვნული სამსახური.",
+    copyright2:
+      "ვებგვერდის შინაარსი შესაძლოა არ გამოხატავდეს ევროკავშირის, დანიისა და გაეროს განვითარების პროგრამის შეხედულებებს.",
+    copyright3: "მონაცემთა გამოყენების პირობები",
   },
 };
 
