@@ -5,7 +5,9 @@
                 <div v-for="(box, index) in textboxes" :key="index" @mouseover="changeImageOnHover(index)"
                     @mouseleave="resetImage(index)">
                     <img :src="box.currentImage" class="indic-icons" />
-                    <span class="tr" :style="{ color: box.currentSpanColor }">
+                    <span data-bs-toggle="popover" :data-bs-title="$t(box.key)" :data-bs-content="box.popoverContent"
+                        data-bs-trigger="hover focus" data-bs-placement="top" class="tr"
+                        :style="{ color: box.currentSpanColor }">
                         {{ $t(box.key) }} {{ box.text }} {{ $t(box.secondaryKey) }}
                     </span>
                 </div>
@@ -100,6 +102,9 @@
 </template>
 
 <script>
+import { onMounted, nextTick } from 'vue';
+import * as bootstrap from 'bootstrap'; // Import Bootstrap's JavaScript
+
 export default {
     data() {
         return {
@@ -111,6 +116,7 @@ export default {
                     key: 'AREAMSR',
                     secondaryKey: 'areasqkm',
                     text: '69 700',
+                    popoverContent: 'Area measured in square kilometers',
                     originalSpanColor: 'black',
                     hoverSpanColor: 'red',
                     currentSpanColor: 'black',
@@ -122,6 +128,7 @@ export default {
                     key: 'POPULMSR',
                     secondaryKey: 'thousand',
                     text: '3 694.6',
+                    popoverContent: 'Population in thousands',
                     originalSpanColor: 'black',
                     hoverSpanColor: 'red',
                     currentSpanColor: 'black',
@@ -133,6 +140,7 @@ export default {
                     key: 'GDPMSR',
                     secondaryKey: 'empty',
                     text: '11.0%',
+                    popoverContent: 'GDP growth percentage',
                     originalSpanColor: 'black',
                     hoverSpanColor: 'red',
                     currentSpanColor: 'black',
@@ -144,6 +152,7 @@ export default {
                     key: 'CURMSR',
                     secondaryKey: 'dollar',
                     text: '6731.2',
+                    popoverContent: 'Current income in dollars',
                     originalSpanColor: 'black',
                     hoverSpanColor: 'red',
                     currentSpanColor: 'black',
@@ -155,6 +164,7 @@ export default {
                     key: 'INFMSR',
                     secondaryKey: 'empty',
                     text: '0.6%',
+                    popoverContent: 'Inflation rate',
                     originalSpanColor: 'black',
                     hoverSpanColor: 'red',
                     currentSpanColor: 'black',
@@ -166,6 +176,7 @@ export default {
                     key: 'UNEMPMSR',
                     secondaryKey: 'empty',
                     text: '16.4%',
+                    popoverContent: 'Unemployment rate',
                     originalSpanColor: 'black',
                     hoverSpanColor: 'red',
                     currentSpanColor: 'black',
@@ -177,6 +188,7 @@ export default {
                     key: 'BUSMSR',
                     secondaryKey: 'empty',
                     text: '847 097',
+                    popoverContent: 'Number of businesses',
                     originalSpanColor: 'black',
                     hoverSpanColor: 'red',
                     currentSpanColor: 'black',
@@ -193,6 +205,15 @@ export default {
             this.textboxes[index].currentImage = this.textboxes[index].originalImage;
             this.textboxes[index].currentSpanColor = this.textboxes[index].originalSpanColor;
         },
+    },
+    mounted() {
+        this.$nextTick(() => {
+            const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]');
+            // console.log('Found popover elements:', popoverTriggerList.length);
+            [...popoverTriggerList].forEach(popoverTriggerEl => {
+                new bootstrap.Popover(popoverTriggerEl);
+            });
+        });
     },
 };
 </script>
