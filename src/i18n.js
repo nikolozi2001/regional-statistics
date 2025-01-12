@@ -16,6 +16,15 @@ const messages = {
     UNEMPMSR: "Unemployment Rate:",
     BUSMSR: "The Number of Registered Business Entities (unit):",
 
+    popover_AREAMSR: "By March 1, 2014",
+    popover_POPULMSR: "By January 1, 2024",
+    popover_GDPMSR: "Data of 2023",
+    popover_CURMSR: "Data of 2023",
+    popover_INFMSR: "Anual by September, 2024",
+    popover_UNEMPMSR: "Data of 2023",
+    popover_BUSMSR: "By January 1, 2023",
+
+
     areasqkm: "km²",
     thousand: "thousand",
     dollar: "USD",
@@ -50,6 +59,14 @@ const messages = {
     INFMSR: "ინფლაცია:",
     UNEMPMSR: "უმუშევრობის დონე:",
     BUSMSR: "რეგისტრირებული ეკონომიკური სუბიექტები:",
+
+    popover_AREAMSR: "2014 წლის 1 მარტის მონაცემები",
+    popover_POPULMSR: "2024 წლის 1 იანვარის მონაცემები",
+    popover_GDPMSR: "2023 წლის მონაცემები",
+    popover_CURMSR: "2023 წლის მონაცემები",
+    popover_INFMSR: "2024 წლის სექტემბრის მონაცემები",
+    popover_UNEMPMSR: "2023 წლის მონაცემები",
+    popover_BUSMSR: "2023 წლის 1 იანვარის მონაცემები",
 
     areasqkm: "კმ²",
     thousand: "ათასი",

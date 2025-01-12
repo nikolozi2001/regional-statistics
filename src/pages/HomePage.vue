@@ -5,9 +5,9 @@
                 <div v-for="(box, index) in textboxes" :key="index" @mouseover="changeImageOnHover(index)"
                     @mouseleave="resetImage(index)">
                     <img :src="box.currentImage" class="indic-icons" />
-                    <span data-bs-toggle="popover" :data-bs-title="$t(box.key)" :data-bs-content="box.popoverContent"
-                        data-bs-trigger="hover focus" data-bs-placement="top" class="tr"
-                        :style="{ color: box.currentSpanColor }">
+                    <span data-bs-toggle="popover" :data-bs-title="$t(box.key)"
+                        :data-bs-content="$t(box.popoverContent)" data-bs-trigger="hover focus" data-bs-placement="top"
+                        class="tr" :style="{ color: box.currentSpanColor }">
                         {{ $t(box.key) }} {{ box.text }} {{ $t(box.secondaryKey) }}
                     </span>
                 </div>
@@ -103,7 +103,9 @@
 
 <script>
 import { onMounted, nextTick } from 'vue';
-import * as bootstrap from 'bootstrap'; // Import Bootstrap's JavaScript
+import { useI18n } from 'vue-i18n';
+import * as bootstrap from 'bootstrap';
+import { watch } from 'vue';
 
 export default {
     data() {
@@ -116,7 +118,7 @@ export default {
                     key: 'AREAMSR',
                     secondaryKey: 'areasqkm',
                     text: '69 700',
-                    popoverContent: 'Area measured in square kilometers',
+                    popoverContent: 'popover_AREAMSR',
                     originalSpanColor: 'black',
                     hoverSpanColor: 'red',
                     currentSpanColor: 'black',
@@ -128,7 +130,7 @@ export default {
                     key: 'POPULMSR',
                     secondaryKey: 'thousand',
                     text: '3 694.6',
-                    popoverContent: 'Population in thousands',
+                    popoverContent: 'popover_POPULMSR',
                     originalSpanColor: 'black',
                     hoverSpanColor: 'red',
                     currentSpanColor: 'black',
@@ -140,7 +142,7 @@ export default {
                     key: 'GDPMSR',
                     secondaryKey: 'empty',
                     text: '11.0%',
-                    popoverContent: 'GDP growth percentage',
+                    popoverContent: 'popover_GDPMSR',
                     originalSpanColor: 'black',
                     hoverSpanColor: 'red',
                     currentSpanColor: 'black',
@@ -152,7 +154,7 @@ export default {
                     key: 'CURMSR',
                     secondaryKey: 'dollar',
                     text: '6731.2',
-                    popoverContent: 'Current income in dollars',
+                    popoverContent: 'popover_CURMSR',
                     originalSpanColor: 'black',
                     hoverSpanColor: 'red',
                     currentSpanColor: 'black',
@@ -164,7 +166,7 @@ export default {
                     key: 'INFMSR',
                     secondaryKey: 'empty',
                     text: '0.6%',
-                    popoverContent: 'Inflation rate',
+                    popoverContent: 'popover_INFMSR',
                     originalSpanColor: 'black',
                     hoverSpanColor: 'red',
                     currentSpanColor: 'black',
@@ -176,7 +178,7 @@ export default {
                     key: 'UNEMPMSR',
                     secondaryKey: 'empty',
                     text: '16.4%',
-                    popoverContent: 'Unemployment rate',
+                    popoverContent: 'popover_UNEMPMSR',
                     originalSpanColor: 'black',
                     hoverSpanColor: 'red',
                     currentSpanColor: 'black',
@@ -188,7 +190,7 @@ export default {
                     key: 'BUSMSR',
                     secondaryKey: 'empty',
                     text: '847 097',
-                    popoverContent: 'Number of businesses',
+                    popoverContent: 'popover_BUSMSR',
                     originalSpanColor: 'black',
                     hoverSpanColor: 'red',
                     currentSpanColor: 'black',
@@ -214,6 +216,19 @@ export default {
                 new bootstrap.Popover(popoverTriggerEl);
             });
         });
+
+        const { locale } = useI18n();
+        watch(locale, () => {
+            // console.log('Locale changed to:', locale.value);
+            this.$nextTick(() => {
+                const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]');
+                // console.log('Found popover elements:', popoverTriggerList.length);
+                [...popoverTriggerList].forEach(popoverTriggerEl => {
+                    new bootstrap.Popover(popoverTriggerEl);
+                });
+            });
+        });
+
     },
 };
 </script>
