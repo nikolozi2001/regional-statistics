@@ -1,5 +1,5 @@
 <template>
-    <main>
+    <main id="background">
         <div class="container-fluid">
             <div id="textbox">
                 <div v-for="(box, index) in textboxes" :key="index" @mouseover="changeImageOnHover(index)"
@@ -17,7 +17,7 @@
         <div class="container-fluid">
             <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
                 xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" version="1.1" width="100%" height="100%"
-                viewBox="0 0 720 540">
+                viewBox="0 100 720 400">
 
                 <g inkscape:groupmode="layer" inkscape:label="Georgia">
                     <path transform="matrix(1,0,0,-1,221.9233,183.979)"
@@ -234,6 +234,21 @@ export default {
 </script>
 
 <style scoped>
+
+#background::before {
+    content: '';
+    background-image: url('/src/components/images/reg_photos/15.jpg');
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-size: cover;
+    background-position: center;
+    opacity: 0.3;
+    z-index: -1;
+}
+
 #textbox {
     display: flex;
     flex-wrap: wrap;
