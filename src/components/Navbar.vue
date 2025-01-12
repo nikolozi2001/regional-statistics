@@ -23,9 +23,9 @@
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-3">
             <!-- Back Button on the left -->
             <div class="mb-2 mb-md-0">
-                <a class="btn header-btn" onclick="previous()">
+                <button class="btn header-btn" @click="previous">
                     {{ $t('back') }}
-                </a>
+                </button>
             </div>
 
             <!-- Navigation Links with responsive wrapping -->
