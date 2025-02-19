@@ -5,6 +5,7 @@ import NotFoundErrorPage from "../pages/errors/NotFoundErrorPage.vue";
 import Adjara from "@/pages/regions/adjara/Adjara.vue";
 import RegStat from "@/components/RegStat.vue";
 import Guria from "@/pages/regions/guria/Guria.vue";
+import AdminPanel from "@/pages/admin/AdminPanel.vue";
 
 const routes = [
   {
@@ -41,6 +42,11 @@ const routes = [
     path: "/regions/guria/guria",
     name: "Guria",
     component: Guria,
+  },
+  {
+    path: "/admin",
+    name: "AdminPanel",
+    component: AdminPanel,
   },
 ];
 
