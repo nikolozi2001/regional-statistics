@@ -13,9 +13,8 @@
                 </div>
                 <div class="col">
                     <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1"
-                        
                         viewBox="0 0 1000 1000">
-                        <g inkscape:groupmode="layer" inkscape:label="Georgia">
+                        <g id="layer3" inkscape:groupmode="layer" inkscape:label="Guria">
 
                             <path id="group3" class="nonactive" data-clicked="false" data-scale="4.73"
                                 data-trans-x="-1720" data-trans-y="690"
@@ -72,7 +71,7 @@ export default {
 #background::before {
     content: '';
     background-image: url('/src/components/images/reg_photos/3.jpg');
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
@@ -81,5 +80,12 @@ export default {
     background-position: center;
     opacity: 0.3;
     z-index: -1;
+}
+
+g#layer3 {
+    transform-origin: center;
+    transform: scale(3.4);
+    -webkit-transform-origin-x: 66%;
+    -webkit-transform-origin-y: 75%;
 }
 </style>

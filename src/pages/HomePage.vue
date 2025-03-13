@@ -544,7 +544,7 @@ export default {
 #background::before {
     content: '';
     background-image: url('/src/components/images/reg_photos/15.jpg');
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
