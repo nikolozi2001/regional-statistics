@@ -8,6 +8,7 @@ const multer = require('multer');
 const fs = require('fs');
 const http = require('http');
 const net = require('net');
+const { errorHandler, notFound } = require('./middleware/errorHandler');
 require('dotenv').config();
 
 // Initialize express app
@@ -85,39 +86,20 @@ const pool = mysql.createPool({
   queueLimit: 0
 });
 
-// Import routes
-const regionRoutes = require('./routes/regions');
-const statRoutes = require('./routes/statistics');
+// Import unified routes
+const routes = require('./routes/routes');
+
+// Middleware to attach pool to request object
+app.use((req, res, next) => {
+  req.pool = pool;
+  next();
+});
+
+// Use file upload middleware for the upload endpoint
+app.use('/api/upload', upload.single('file'));
 
 // Use routes
-app.use('/api/regions', regionRoutes(pool));
-app.use('/api/statistics', statRoutes(pool));
-
-// File upload route
-app.post('/api/upload', upload.single('file'), async (req, res) => {
-  try {
-    const { regionId, fileType } = req.body;
-    const file = req.file;
-
-    if (!file) {
-      return res.status(400).send('No file uploaded');
-    }
-
-    // Store file reference in database
-    const [result] = await pool.query(
-      'INSERT INTO uploads (region_id, file_type, file_path) VALUES (?, ?, ?)',
-      [regionId, fileType, file.path]
-    );
-
-    return res.status(201).json({ 
-      message: 'File uploaded successfully',
-      fileId: result.insertId 
-    });
-  } catch (error) {
-    console.error('Upload error:', error);
-    return res.status(500).send('Server error during upload');
-  }
-});
+app.use('/api', routes);
 
 // Health check route
 app.get('/api/health', (req, res) => {
@@ -131,11 +113,11 @@ app.get('/api/server-info', (req, res) => {
   });
 });
 
-// Global error handler
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).send('Something broke!');
-});
+// Add 404 handler for unmatched routes
+app.use(notFound);
+
+// Add global error handler
+app.use(errorHandler);
 
 // Create server but don't start listening yet
 const server = http.createServer(app);
