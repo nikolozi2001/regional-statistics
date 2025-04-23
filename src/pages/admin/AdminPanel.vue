@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import { uploadsAPI } from '../../http/api';
 
 export default {
     data() {
@@ -44,11 +44,7 @@ export default {
             formData.append('file', this.file);
 
             try {
-                const response = await axios.post('http://localhost:8000/api/upload', formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data'
-                    }
-                });
+                const response = await uploadsAPI.uploadFile(formData);
                 alert('File uploaded successfully');
             } catch (error) {
                 console.error('Error uploading file:', error.response ? error.response.data : error.message);

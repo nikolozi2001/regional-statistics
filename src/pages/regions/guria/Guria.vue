@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import { regionsAPI } from '@/http/api';
 import { useI18n } from 'vue-i18n';
 import RegStat from '@/components/RegStat.vue';
 
@@ -53,7 +53,7 @@ export default {
     methods: {
         async fetchRegions() {
             try {
-                const response = await axios.get('http://localhost:8000/api/regions');
+                const response = await regionsAPI.getAll();
                 this.regions = response.data; // Set the regions data from the API response
             } catch (error) {
                 console.error('Error fetching regions:', error);
