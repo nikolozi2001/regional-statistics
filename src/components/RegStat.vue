@@ -65,6 +65,38 @@
                 </div>
             </div>
         </div>
+
+        <!-- Birth Information Section -->
+        <p class="d-inline-flex gap-1 mt-2 birth-section">
+            <a class="btn btn-primary" data-bs-toggle="collapse" :href="`#birthInfo-${regionId}`" role="button" :aria-expanded="isBirthExpanded" 
+                :aria-controls="`birthInfo-${regionId}`" @click="toggleBirthExpand">
+                {{ birthLabels && birthLabels[0] ? birthLabels[0].birth : 'Birth Information' }}
+                <span class="ms-1" v-if="isBirthLoading"><i class="pi pi-spin pi-spinner"></i></span>
+            </a>
+        </p>
+        <div class="collapse" :id="`birthInfo-${regionId}`">
+            <div class="card card-body">
+                <div v-if="birthError" class="alert alert-danger" role="alert">
+                    {{ birthError }}
+                </div>
+                <div v-if="isBirthLoading" class="text-center">
+                    <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+                </div>
+                <div v-else>
+                    <template v-if="birthData.length > 0">
+                        <p v-for="(item, index) in birthData" :key="index">
+                            {{ item.birth }}
+                            <span>
+                                <a :href="getBirthFilePath(index + 1)" download title="Download Excel file">
+                                    <i class="pi pi-file-excel" style="font-size: 20px; margin-right: 5px;"></i>
+                                </a>
+                            </span>
+                        </p>
+                    </template>
+                    <p v-else>No birth data available.</p>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -88,15 +120,20 @@ export default {
         const { locale } = useI18n();
         const basicInfoLabels = ref([]);
         const populationLabels = ref([]);
+        const birthLabels = ref([]);
         const isBasicLoading = ref(false);
         const isPopulationLoading = ref(false);
+        const isBirthLoading = ref(false);
         const basicError = ref(null);
         const populationError = ref(null);
+        const birthError = ref(null);
         const isBasicExpanded = ref(false);
         const isPopulationExpanded = ref(false);
+        const isBirthExpanded = ref(false);
         const cachedData = ref({
             basicInfo: {},
-            population: {}
+            population: {},
+            birth: {}
         });
 
         // Computed property to safely filter and extract population data
@@ -111,6 +148,18 @@ export default {
                 .filter(item => item && item.population && item.population.trim() !== '');
         });
 
+        // Computed property to safely filter and extract birth data
+        const birthData = computed(() => {
+            if (!birthLabels.value || birthLabels.value.length === 0) {
+                return [];
+            }
+            
+            // Filter out empty items and return only the ones with birth data
+            return birthLabels.value
+                .slice(1, 8)  // Get the first 7 items after the title (adjust as needed)
+                .filter(item => item && item.birth !== null);
+        });
+
         const toggleBasicExpand = () => {
             isBasicExpanded.value = !isBasicExpanded.value;
         };
@@ -122,6 +171,16 @@ export default {
             if (isPopulationExpanded.value) {
                 // Force refresh data when toggling
                 fetchPopulationInformation(true);
+            }
+        };
+
+        const toggleBirthExpand = () => {
+            isBirthExpanded.value = !isBirthExpanded.value;
+            
+            // Always fetch birth data when expanding, regardless of cache
+            if (isBirthExpanded.value) {
+                // Force refresh data when toggling
+                fetchBirthInformation(true);
             }
         };
 
@@ -184,6 +243,36 @@ export default {
             }
         };
 
+        const fetchBirthInformation = async (forceRefresh = false) => {
+            // Skip cache if forceRefresh is true
+            if (!forceRefresh && cachedData.value.birth[locale.value]) {
+                birthLabels.value = cachedData.value.birth[locale.value];
+                return;
+            }
+
+            isBirthLoading.value = true;
+            birthError.value = null;
+            
+            try {
+                // Fetch birth data from the API
+                const endpoint = `${API_BASE_URL}/${locale.value === 'en' ? 'indicatorsEn' : 'indicators'}/birth`;
+                
+                const response = await axios.get(endpoint);
+                birthLabels.value = response.data;
+                
+                // Cache the response by language
+                cachedData.value.birth[locale.value] = response.data;
+            } catch (err) {
+                console.error('Error fetching birth information:', err);
+                birthError.value = 'Failed to load data. Please try again later.';
+                
+                // Set empty array on error to avoid undefined errors
+                birthLabels.value = [];
+            } finally {
+                isBirthLoading.value = false;
+            }
+        };
+
         /**
          * Generates a file path based on file type and current language
          * @param {string} fileType - Type of file (area or settlements)
@@ -230,22 +319,53 @@ export default {
             return `/src/excels/reg/${lang}/${props.regionId}/${folder}/${fileName}`;
         };
 
+        /**
+         * Generates a file path for birth files
+         * @param {number} index - Index of the birth data item
+         * @returns {string} Path to the file
+         */
+        const getBirthFilePath = (index) => {
+            const lang = locale.value === 'ka' ? 'ka' : 'en';
+            const folder = lang === 'ka' ? 'demografia' : 'demography';
+            
+            let fileName;
+            switch(index) {
+                case 1:
+                    fileName = lang === 'ka' ? 'gamosaxulebuli ricxovnoba.xlsx' : 'births.xlsx';
+                    break;
+                case 2:
+                    fileName = lang === 'ka' ? 'qalaqis gamosaxulebis cili.xlsx' : 'urban_births.xlsx';
+                    break;
+                case 3:
+                    fileName = lang === 'ka' ? 'gamosaxlebis simchidrove.xlsx' : 'birth_density.xlsx';
+                    break;
+                default:
+                    fileName = 'data.xlsx';
+            }
+            
+            return `/src/excels/reg/${lang}/${props.regionId}/${folder}/${fileName}`;
+        };
+
         const clearCache = () => {
             // Clear cached data to force a fresh fetch
             cachedData.value = {
                 basicInfo: {},
-                population: {}
+                population: {},
+                birth: {}
             };
             
             // Reset data refs
             basicInfoLabels.value = [];
             populationLabels.value = [];
+            birthLabels.value = [];
         };
 
         onMounted(() => {
             fetchBasicInformation();
             // Initialize populationLabels with an empty array to avoid undefined errors
             populationLabels.value = [];
+            // Initialize birthLabels with an empty array to avoid undefined errors
+            birthLabels.value = [];
         });
 
         // Watch for language changes and refetch all data when locale changes
@@ -260,23 +380,34 @@ export default {
             // Always fetch population data on language change, even if not expanded
             // This ensures data is ready when user expands the section
             fetchPopulationInformation(true);
+
+            // Always fetch birth data on language change, even if not expanded
+            // This ensures data is ready when user expands the section
+            fetchBirthInformation(true);
         }, { immediate: true }); // immediate: true ensures it runs on component mount
 
         return { 
             locale,
             basicInfoLabels,
             populationLabels,
+            birthLabels,
             populationData,
+            birthData,
             isBasicLoading,
             isPopulationLoading,
+            isBirthLoading,
             basicError,
             populationError,
+            birthError,
             isBasicExpanded,
             isPopulationExpanded,
+            isBirthExpanded,
             toggleBasicExpand,
             togglePopulationExpand,
+            toggleBirthExpand,
             getFilePath,
-            getPopulationFilePath
+            getPopulationFilePath,
+            getBirthFilePath
         };
     }
 };
@@ -296,6 +427,9 @@ export default {
     width: 100%;
 }
 .population-section {
+    margin-top: 1rem;
+}
+.birth-section {
     margin-top: 1rem;
 }
 </style>
