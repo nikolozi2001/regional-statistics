@@ -1,8 +1,8 @@
 <template>
     <div class="regions-info-container">
         <p class="d-inline-flex gap-1">
-            <a class="btn btn-primary" data-bs-toggle="collapse" :href="`#basicInfo-${regionId}`" role="button" :aria-expanded="isBasicExpanded" 
-                :aria-controls="`basicInfo-${regionId}`" @click="toggleBasicExpand">
+            <a class="btn btn-primary" data-bs-toggle="collapse" :href="`#basicInfo-${regionId}`" role="button"
+                :aria-expanded="isBasicExpanded" :aria-controls="`basicInfo-${regionId}`" @click="toggleBasicExpand">
                 {{ basicInfoLabels && basicInfoLabels[0] ? basicInfoLabels[0].basicInformation : 'Basic Information' }}
                 <span class="ms-1" v-if="isBasicLoading"><i class="pi pi-spin pi-spinner"></i></span>
             </a>
@@ -16,14 +16,16 @@
                     <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
                 </div>
                 <div v-else>
-                    <p>{{ basicInfoLabels && basicInfoLabels[1] ? basicInfoLabels[1].basicInformation : 'Area of the region' }}
+                    <p>{{ basicInfoLabels && basicInfoLabels[1] ? basicInfoLabels[1].basicInformation : 'Area of the
+                        region' }}
                         <span>
                             <a :href="getFilePath('area')" download title="Download Excel file">
                                 <i class="pi pi-file-excel" style="font-size: 20px; margin-right: 5px;"></i>
                             </a>
                         </span>
                     </p>
-                    <p>{{ basicInfoLabels && basicInfoLabels[2] ? basicInfoLabels[2].basicInformation : 'Number of municipalities, cities and villages' }}
+                    <p>{{ basicInfoLabels && basicInfoLabels[2] ? basicInfoLabels[2].basicInformation : 'Number of
+                    municipalities, cities and villages' }}
                         <span>
                             <a :href="getFilePath('settlements')" download title="Download Excel file">
                                 <i class="pi pi-file-excel" style="font-size: 20px; margin-right: 5px;"></i>
@@ -33,12 +35,14 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Population Information Section -->
         <p class="d-inline-flex gap-1 mt-2 population-section">
-            <a class="btn btn-primary" data-bs-toggle="collapse" :href="`#populationInfo-${regionId}`" role="button" :aria-expanded="isPopulationExpanded" 
-                :aria-controls="`populationInfo-${regionId}`" @click="togglePopulationExpand">
-                {{ populationLabels && populationLabels[0] ? populationLabels[0].population : 'Population Information' }}
+            <a class="btn btn-primary" data-bs-toggle="collapse" :href="`#populationInfo-${regionId}`" role="button"
+                :aria-expanded="isPopulationExpanded" :aria-controls="`populationInfo-${regionId}`"
+                @click="togglePopulationExpand">
+                {{ populationLabels && populationLabels[0] ? populationLabels[0].population : 'Population Information'
+                }}
                 <span class="ms-1" v-if="isPopulationLoading"><i class="pi pi-spin pi-spinner"></i></span>
             </a>
         </p>
@@ -104,7 +108,7 @@ export default {
             if (!populationLabels.value || populationLabels.value.length === 0) {
                 return [];
             }
-            
+
             // Filter out empty items and return only the ones with population data
             return populationLabels.value
                 .slice(1, 4)  // Get the first 3 items after the title
@@ -117,7 +121,7 @@ export default {
 
         const togglePopulationExpand = () => {
             isPopulationExpanded.value = !isPopulationExpanded.value;
-            
+
             // Always fetch population data when expanding, regardless of cache
             if (isPopulationExpanded.value) {
                 // Force refresh data when toggling
@@ -134,15 +138,14 @@ export default {
 
             isBasicLoading.value = true;
             basicError.value = null;
-            
+
             try {
                 // Use indicatorsEn API when language is English
                 const endpoint = `${API_BASE_URL}/${locale.value === 'en' ? 'indicatorsEn' : 'indicators'}/basicInformation`;
-                console.log(`Fetching basic info from: ${endpoint}`);
-                
+
                 const response = await axios.get(endpoint);
                 basicInfoLabels.value = response.data;
-                
+
                 // Cache the response by language
                 cachedData.value.basicInfo[locale.value] = response.data;
             } catch (err) {
@@ -164,21 +167,20 @@ export default {
 
             isPopulationLoading.value = true;
             populationError.value = null;
-            
+
             try {
                 // Fetch population data from the API
                 const endpoint = `${API_BASE_URL}/${locale.value === 'en' ? 'indicatorsEn' : 'indicators'}/population`;
-                console.log(`Fetching population from: ${endpoint}`);
-                
+
                 const response = await axios.get(endpoint);
                 populationLabels.value = response.data;
-                
+
                 // Cache the response by language
                 cachedData.value.population[locale.value] = response.data;
             } catch (err) {
                 console.error('Error fetching population information:', err);
                 populationError.value = 'Failed to load data. Please try again later.';
-                
+
                 // Set empty array on error to avoid undefined errors
                 populationLabels.value = [];
             } finally {
@@ -194,14 +196,14 @@ export default {
         const getFilePath = (fileType) => {
             const lang = locale.value === 'ka' ? 'ka' : 'en';
             const folder = lang === 'ka' ? 'dziritadi informacia' : 'main information';
-            
+
             let fileName;
             if (fileType === 'area') {
                 fileName = lang === 'ka' ? 'regionis fartobi.xlsx' : 'area.xlsx';
             } else if (fileType === 'settlements') {
                 fileName = lang === 'ka' ? 'municipalitetebis, qalaqebis da soflebis raodenoba.xlsx' : 'number of settlements.xlsx';
             }
-            
+
             return `/src/excels/reg/${lang}/${props.regionId}/${folder}/${fileName}`;
         };
 
@@ -213,9 +215,9 @@ export default {
         const getPopulationFilePath = (index) => {
             const lang = locale.value === 'ka' ? 'ka' : 'en';
             const folder = lang === 'ka' ? 'demografia' : 'demography';
-            
+
             let fileName;
-            switch(index) {
+            switch (index) {
                 case 1:
                     fileName = lang === 'ka' ? 'mosaxleobis ricxovnoba.xlsx' : 'population.xlsx';
                     break;
@@ -228,7 +230,7 @@ export default {
                 default:
                     fileName = 'data.xlsx';
             }
-            
+
             return `/src/excels/reg/${lang}/${props.regionId}/${folder}/${fileName}`;
         };
 
@@ -238,7 +240,7 @@ export default {
                 basicInfo: {},
                 population: {}
             };
-            
+
             // Reset data refs
             basicInfoLabels.value = [];
             populationLabels.value = [];
@@ -252,20 +254,19 @@ export default {
 
         // Watch for language changes and refetch all data when locale changes
         watch(locale, (newLocale, oldLocale) => {
-            console.log(`Language changed from ${oldLocale} to ${newLocale}`);
-            
+
             // Clear the cache to force new data fetching
             clearCache();
-            
+
             // Always fetch basic information on language change with force refresh
             fetchBasicInformation(true);
-            
+
             // Always fetch population data on language change, even if not expanded
             // This ensures data is ready when user expands the section
             fetchPopulationInformation(true);
         }, { immediate: true }); // immediate: true ensures it runs on component mount
 
-        return { 
+        return {
             locale,
             basicInfoLabels,
             populationLabels,
@@ -290,14 +291,17 @@ export default {
     margin-bottom: 0.75rem;
     font-size: 1rem;
 }
+
 .alert {
     margin-top: 0.5rem;
 }
+
 .regions-info-container {
     display: flex;
     flex-direction: column;
     width: 100%;
 }
+
 .population-section {
     margin-top: 1rem;
 }
