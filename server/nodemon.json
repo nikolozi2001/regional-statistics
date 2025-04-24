@@ -1,5 +1,0 @@
-{
-  "ignore": ["port-info.json"],
-  "watch": ["*.js", "routes/*.js"],
-  "ext": "js,json"
-}
