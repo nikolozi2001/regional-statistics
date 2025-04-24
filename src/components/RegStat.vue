@@ -129,6 +129,70 @@
                 </div>
             </div>
         </div>
+
+        <!-- Natural Increase Information Section -->
+        <p class="d-inline-flex gap-1 mt-2 natural-increase-section">
+            <a class="btn btn-primary" data-bs-toggle="collapse" :href="`#naturalIncreaseInfo-${regionId}`" role="button" :aria-expanded="isNaturalIncreaseExpanded" 
+                :aria-controls="`naturalIncreaseInfo-${regionId}`" @click="toggleNaturalIncreaseExpand">
+                {{ naturalIncreaseLabels && naturalIncreaseLabels[0] ? naturalIncreaseLabels[0].naturalIncrease : 'Natural Increase Information' }}
+                <span class="ms-1" v-if="isNaturalIncreaseLoading"><i class="pi pi-spin pi-spinner"></i></span>
+            </a>
+        </p>
+        <div class="collapse" :id="`naturalIncreaseInfo-${regionId}`">
+            <div class="card card-body">
+                <div v-if="naturalIncreaseError" class="alert alert-danger" role="alert">
+                    {{ naturalIncreaseError }}
+                </div>
+                <div v-if="isNaturalIncreaseLoading" class="text-center">
+                    <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+                </div>
+                <div v-else>
+                    <template v-if="naturalIncreaseData.length > 0">
+                        <p v-for="(item, index) in naturalIncreaseData" :key="index">
+                            {{ item.naturalIncrease }}
+                            <span>
+                                <a :href="getNaturalIncreaseFilePath(index + 1)" download title="Download Excel file">
+                                    <i class="pi pi-file-excel" style="font-size: 20px; margin-right: 5px;"></i>
+                                </a>
+                            </span>
+                        </p>
+                    </template>
+                    <p v-else>No natural increase data available.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Marriage Information Section -->
+        <p class="d-inline-flex gap-1 mt-2 marriage-section">
+            <a class="btn btn-primary" data-bs-toggle="collapse" :href="`#marriageInfo-${regionId}`" role="button" :aria-expanded="isMarriageExpanded" 
+                :aria-controls="`marriageInfo-${regionId}`" @click="toggleMarriageExpand">
+                {{ marriageLabels && marriageLabels[0] ? marriageLabels[0].marriage : 'Marriage Information' }}
+                <span class="ms-1" v-if="isMarriageLoading"><i class="pi pi-spin pi-spinner"></i></span>
+            </a>
+        </p>
+        <div class="collapse" :id="`marriageInfo-${regionId}`">
+            <div class="card card-body">
+                <div v-if="marriageError" class="alert alert-danger" role="alert">
+                    {{ marriageError }}
+                </div>
+                <div v-if="isMarriageLoading" class="text-center">
+                    <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+                </div>
+                <div v-else>
+                    <template v-if="marriageData.length > 0">
+                        <p v-for="(item, index) in marriageData" :key="index">
+                            {{ item.marriage }}
+                            <span>
+                                <a :href="getMarriageFilePath(index + 1)" download title="Download Excel file">
+                                    <i class="pi pi-file-excel" style="font-size: 20px; margin-right: 5px;"></i>
+                                </a>
+                            </span>
+                        </p>
+                    </template>
+                    <p v-else>No marriage data available.</p>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -154,23 +218,33 @@ export default {
         const populationLabels = ref([]);
         const birthLabels = ref([]);
         const deathLabels = ref([]);
+        const naturalIncreaseLabels = ref([]);
+        const marriageLabels = ref([]);
         const isBasicLoading = ref(false);
         const isPopulationLoading = ref(false);
         const isBirthLoading = ref(false);
         const isDeathLoading = ref(false);
+        const isNaturalIncreaseLoading = ref(false);
+        const isMarriageLoading = ref(false);
         const basicError = ref(null);
         const populationError = ref(null);
         const birthError = ref(null);
         const deathError = ref(null);
+        const naturalIncreaseError = ref(null);
+        const marriageError = ref(null);
         const isBasicExpanded = ref(false);
         const isPopulationExpanded = ref(false);
         const isBirthExpanded = ref(false);
         const isDeathExpanded = ref(false);
+        const isNaturalIncreaseExpanded = ref(false);
+        const isMarriageExpanded = ref(false);
         const cachedData = ref({
             basicInfo: {},
             population: {},
             birth: {},
-            death: {}
+            death: {},
+            naturalIncrease: {},
+            marriage: {}
         });
 
         // Computed property to safely filter and extract population data
@@ -209,6 +283,30 @@ export default {
                 .filter(item => item && item.death !== null);
         });
 
+        // Computed property to safely filter and extract natural increase data
+        const naturalIncreaseData = computed(() => {
+            if (!naturalIncreaseLabels.value || naturalIncreaseLabels.value.length === 0) {
+                return [];
+            }
+            
+            // Filter out empty items and return only the ones with natural increase data
+            return naturalIncreaseLabels.value
+                .slice(1, 8)  // Get the first 7 items after the title (adjust as needed)
+                .filter(item => item && item.naturalIncrease !== null);
+        });
+
+        // Computed property to safely filter and extract marriage data
+        const marriageData = computed(() => {
+            if (!marriageLabels.value || marriageLabels.value.length === 0) {
+                return [];
+            }
+            
+            // Filter out empty items and return only the ones with marriage data
+            return marriageLabels.value
+                .slice(1, 8)  // Get the first 7 items after the title (adjust as needed)
+                .filter(item => item && item.marriage !== null);
+        });
+
         const toggleBasicExpand = () => {
             isBasicExpanded.value = !isBasicExpanded.value;
         };
@@ -240,6 +338,26 @@ export default {
             if (isDeathExpanded.value) {
                 // Force refresh data when toggling
                 fetchDeathInformation(true);
+            }
+        };
+
+        const toggleNaturalIncreaseExpand = () => {
+            isNaturalIncreaseExpanded.value = !isNaturalIncreaseExpanded.value;
+            
+            // Always fetch natural increase data when expanding, regardless of cache
+            if (isNaturalIncreaseExpanded.value) {
+                // Force refresh data when toggling
+                fetchNaturalIncreaseInformation(true);
+            }
+        };
+
+        const toggleMarriageExpand = () => {
+            isMarriageExpanded.value = !isMarriageExpanded.value;
+            
+            // Always fetch marriage data when expanding, regardless of cache
+            if (isMarriageExpanded.value) {
+                // Force refresh data when toggling
+                fetchMarriageInformation(true);
             }
         };
 
@@ -362,6 +480,66 @@ export default {
             }
         };
 
+        const fetchNaturalIncreaseInformation = async (forceRefresh = false) => {
+            // Skip cache if forceRefresh is true
+            if (!forceRefresh && cachedData.value.naturalIncrease[locale.value]) {
+                naturalIncreaseLabels.value = cachedData.value.naturalIncrease[locale.value];
+                return;
+            }
+
+            isNaturalIncreaseLoading.value = true;
+            naturalIncreaseError.value = null;
+            
+            try {
+                // Fetch natural increase data from the API
+                const endpoint = `${API_BASE_URL}/${locale.value === 'en' ? 'indicatorsEn' : 'indicators'}/naturalIncrease`;
+                
+                const response = await axios.get(endpoint);
+                naturalIncreaseLabels.value = response.data;
+                
+                // Cache the response by language
+                cachedData.value.naturalIncrease[locale.value] = response.data;
+            } catch (err) {
+                console.error('Error fetching natural increase information:', err);
+                naturalIncreaseError.value = 'Failed to load data. Please try again later.';
+                
+                // Set empty array on error to avoid undefined errors
+                naturalIncreaseLabels.value = [];
+            } finally {
+                isNaturalIncreaseLoading.value = false;
+            }
+        };
+
+        const fetchMarriageInformation = async (forceRefresh = false) => {
+            // Skip cache if forceRefresh is true
+            if (!forceRefresh && cachedData.value.marriage[locale.value]) {
+                marriageLabels.value = cachedData.value.marriage[locale.value];
+                return;
+            }
+
+            isMarriageLoading.value = true;
+            marriageError.value = null;
+            
+            try {
+                // Fetch marriage data from the API
+                const endpoint = `${API_BASE_URL}/${locale.value === 'en' ? 'indicatorsEn' : 'indicators'}/marriage`;
+                
+                const response = await axios.get(endpoint);
+                marriageLabels.value = response.data;
+                
+                // Cache the response by language
+                cachedData.value.marriage[locale.value] = response.data;
+            } catch (err) {
+                console.error('Error fetching marriage information:', err);
+                marriageError.value = 'Failed to load data. Please try again later.';
+                
+                // Set empty array on error to avoid undefined errors
+                marriageLabels.value = [];
+            } finally {
+                isMarriageLoading.value = false;
+            }
+        };
+
         /**
          * Generates a file path based on file type and current language
          * @param {string} fileType - Type of file (area or settlements)
@@ -462,13 +640,69 @@ export default {
             return `/src/excels/reg/${lang}/${props.regionId}/${folder}/${fileName}`;
         };
 
+        /**
+         * Generates a file path for natural increase files
+         * @param {number} index - Index of the natural increase data item
+         * @returns {string} Path to the file
+         */
+        const getNaturalIncreaseFilePath = (index) => {
+            const lang = locale.value === 'ka' ? 'ka' : 'en';
+            const folder = lang === 'ka' ? 'demografia' : 'demography';
+            
+            let fileName;
+            switch(index) {
+                case 1:
+                    fileName = lang === 'ka' ? 'natakhtobi ricxovnoba.xlsx' : 'natural_increase.xlsx';
+                    break;
+                case 2:
+                    fileName = lang === 'ka' ? 'qalaqis natakhtobis cili.xlsx' : 'urban_natural_increase.xlsx';
+                    break;
+                case 3:
+                    fileName = lang === 'ka' ? 'natakhtobis simchidrove.xlsx' : 'natural_increase_density.xlsx';
+                    break;
+                default:
+                    fileName = 'data.xlsx';
+            }
+            
+            return `/src/excels/reg/${lang}/${props.regionId}/${folder}/${fileName}`;
+        };
+
+        /**
+         * Generates a file path for marriage files
+         * @param {number} index - Index of the marriage data item
+         * @returns {string} Path to the file
+         */
+        const getMarriageFilePath = (index) => {
+            const lang = locale.value === 'ka' ? 'ka' : 'en';
+            const folder = lang === 'ka' ? 'demografia' : 'demography';
+            
+            let fileName;
+            switch(index) {
+                case 1:
+                    fileName = lang === 'ka' ? 'qorwinebata raodenoba.xlsx' : 'marriages.xlsx';
+                    break;
+                case 2:
+                    fileName = lang === 'ka' ? 'qorwinebis koeficienti.xlsx' : 'marriage_rate.xlsx';
+                    break;
+                case 3:
+                    fileName = lang === 'ka' ? 'qorwineba asaki.xlsx' : 'marriage_by_age.xlsx';
+                    break;
+                default:
+                    fileName = 'data.xlsx';
+            }
+            
+            return `/src/excels/reg/${lang}/${props.regionId}/${folder}/${fileName}`;
+        };
+
         const clearCache = () => {
             // Clear cached data to force a fresh fetch
             cachedData.value = {
                 basicInfo: {},
                 population: {},
                 birth: {},
-                death: {}
+                death: {},
+                naturalIncrease: {},
+                marriage: {}
             };
             
             // Reset data refs
@@ -476,6 +710,8 @@ export default {
             populationLabels.value = [];
             birthLabels.value = [];
             deathLabels.value = [];
+            naturalIncreaseLabels.value = [];
+            marriageLabels.value = [];
         };
 
         onMounted(() => {
@@ -486,6 +722,10 @@ export default {
             birthLabels.value = [];
             // Initialize deathLabels with an empty array to avoid undefined errors
             deathLabels.value = [];
+            // Initialize naturalIncreaseLabels with an empty array to avoid undefined errors
+            naturalIncreaseLabels.value = [];
+            // Initialize marriageLabels with an empty array to avoid undefined errors
+            marriageLabels.value = [];
         });
 
         // Watch for language changes and refetch all data when locale changes
@@ -508,6 +748,14 @@ export default {
             // Always fetch death data on language change, even if not expanded
             // This ensures data is ready when user expands the section
             fetchDeathInformation(true);
+
+            // Always fetch natural increase data on language change, even if not expanded
+            // This ensures data is ready when user expands the section
+            fetchNaturalIncreaseInformation(true);
+
+            // Always fetch marriage data on language change, even if not expanded
+            // This ensures data is ready when user expands the section
+            fetchMarriageInformation(true);
         }, { immediate: true }); // immediate: true ensures it runs on component mount
 
         return { 
@@ -516,29 +764,43 @@ export default {
             populationLabels,
             birthLabels,
             deathLabels,
+            naturalIncreaseLabels,
+            marriageLabels,
             populationData,
             birthData,
             deathData,
+            naturalIncreaseData,
+            marriageData,
             isBasicLoading,
             isPopulationLoading,
             isBirthLoading,
             isDeathLoading,
+            isNaturalIncreaseLoading,
+            isMarriageLoading,
             basicError,
             populationError,
             birthError,
             deathError,
+            naturalIncreaseError,
+            marriageError,
             isBasicExpanded,
             isPopulationExpanded,
             isBirthExpanded,
             isDeathExpanded,
+            isNaturalIncreaseExpanded,
+            isMarriageExpanded,
             toggleBasicExpand,
             togglePopulationExpand,
             toggleBirthExpand,
             toggleDeathExpand,
+            toggleNaturalIncreaseExpand,
+            toggleMarriageExpand,
             getFilePath,
             getPopulationFilePath,
             getBirthFilePath,
-            getDeathFilePath
+            getDeathFilePath,
+            getNaturalIncreaseFilePath,
+            getMarriageFilePath
         };
     }
 };
@@ -564,6 +826,12 @@ export default {
     margin-top: 1rem;
 }
 .death-section {
+    margin-top: 1rem;
+}
+.natural-increase-section {
+    margin-top: 1rem;
+}
+.marriage-section {
     margin-top: 1rem;
 }
 </style>
