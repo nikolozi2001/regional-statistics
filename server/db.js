@@ -1,23 +1,28 @@
-const sql = require("mssql");
-require("dotenv-safe").config();
+const mysql = require("mysql2/promise");
+require("dotenv-safe").config({
+  allowEmptyValues: true
+});
 const logger = require("./logger");
 
 const config = {
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
-  server: process.env.DB_SERVER,
+  host: process.env.DB_HOST,
   database: process.env.DB_DATABASE,
   port: parseInt(process.env.DB_PORT, 10),
-  options: {
-    encrypt: false, // Disable encryption
-    enableArithAbort: true,
-  },
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
 };
 
-const poolPromise = new sql.ConnectionPool(config)
-  .connect()
-  .then((pool) => {
-    logger.info("Connected to SQL Server");
+// Create MySQL connection pool
+const pool = mysql.createPool(config);
+
+// Test connection
+pool.getConnection()
+  .then(connection => {
+    logger.info("Connected to MySQL");
+    connection.release();
     return pool;
   })
   .catch((err) => {
@@ -27,6 +32,5 @@ const poolPromise = new sql.ConnectionPool(config)
   });
 
 module.exports = {
-  sql,
-  poolPromise,
+  pool
 };

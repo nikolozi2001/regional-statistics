@@ -2,12 +2,12 @@
 
 ## Overview
 
-This API provides endpoints to manage records, households, monthes, resource data, energy consumption, and indicators.
+This API provides endpoints to manage records, households, months, resource data, energy consumption, and indicators. It's built with Express.js and connects to a MySQL database.
 
 ## Prerequisites
 
-- Node.js
-- SQL Server
+- Node.js (v14 or higher)
+- MySQL Database
 
 ## Setup
 
@@ -15,7 +15,7 @@ This API provides endpoints to manage records, households, monthes, resource dat
 
    ```sh
    git clone <repository-url>
-   cd nrg-api
+   cd server
    ```
 
 2. Install dependencies:
@@ -25,208 +25,34 @@ This API provides endpoints to manage records, households, monthes, resource dat
    ```
 
 3. Configure the database connection:
-   Update the `.env` file with your SQL Server credentials.
+   Create a `.env` file with your MySQL credentials based on the sample below:
+
+   ```
+   DB_HOST=localhost
+   DB_USER=username
+   DB_PASSWORD=password
+   DB_DATABASE=dbname
+   DB_PORT=3306
+   PORT=3000
+   ```
 
 ## Running the Server
 
-1. Install dependencies:
-
-   ```sh
-   npm install
-   ```
-
-2. Start the server:
-   ```sh
-   npm start
-   ```
-
-The server will run on `http://localhost:3000`.
-
-## Endpoints
-
-### Records
-
-- **GET /api/records**: Get all records.
-- **GET /api/records/:id**: Get a record by its code.
-- **POST /api/records**: Create a new record.
-- **PUT /api/records/:id**: Update a record by its ID.
-- **DELETE /api/records/:id**: Delete a record by its ID.
-
-### Households
-
-- **GET /api/households/:id**: Get household data by chart ID.
-
-### Monthes
-
-- **GET /api/monthes/:year/:chart_id**: Get month data by year and chart ID.
-
-### Monthes (All Data)
-
-- **GET /api/monthesAll/year/:year**: Get all months data for a specific year.
-- **GET /api/monthesAll/year/:year/chart/:chart_id**: Get months data for a specific year and chart ID.
-
-### Resource
-
-- **GET /api/resource/:year/:chart_id**: Get resource data by year and chart ID.
-
-### Households with Codes
-
-- **GET /api/householdswithcodes/:id**: Get households with codes data by chart ID.
-
-### Energy Consumption
-
-- **GET /api/energyConsumption/:legend_code**: Get energy consumption data by legend code.
-
-### Energy Consumption By Sector
-
-- **GET /api/energyConsumptionBySector/:legend_code**: Get energy consumption data by sector.
-
-### Energy Production Data
-
-- **GET /api/energyProduction/:legend_code**: Get energy Production data by legend code.
-
-### Indicators
-
-- **GET /api/indicators/:name**: Get indicator data by name.
-
-### Coal Supply Consumption (in Terajoules)
-
-- **GET /api/coalSupply/year/:year**: Get all coal supply consumption data for a specific year.
-- **GET /api/coalSupply/code/:code/year/:year**: Get coal supply consumption data for a specific code and year.
-
-### Coal Supply Consumption (in Tons)
-
-- **GET /api/coalSupplyTons/year/:year**: Get all coal supply consumption data in tons for a specific year.
-- **GET /api/coalSupplyTons/code/:code/year/:year**: Get coal supply consumption data in tons for a specific code and year.
-
-### Coal Supply Consumption (in Tons of Oil)
-
-- **GET /api/coalSupplyTonsOfOil/year/:year**: Get all coal supply consumption data in tons of oil for a specific year.
-- **GET /api/coalSupplyTonsOfOil/name/:name/year/:year**: Get coal supply consumption data in tons of oil for a specific name and year.
-
-## Example Requests
-
-### Get All Records
-
-```
-GET /api/records
+Start the server:
+```sh
+npm start
 ```
 
-### Get Record by Code
+The server will run on `http://localhost:3000` by default. You can change the port by setting the PORT environment variable.
 
-```
-GET /api/records/1
-```
+## API Documentation
 
-### Create a New Record
-
-```
-POST /api/records
-Content-Type: application/json
-{
-  "name": "Sample Name",
-  "value": "Sample Value"
-}
-```
-
-### Update a Record
-
-```
-PUT /api/records/1
-Content-Type: application/json
-{
-  "name": "Updated Name",
-  "value": "Updated Value"
-}
-```
-
-### Delete a Record
-
-```
-DELETE /api/records/1
-```
-
-### Get Household Data by Chart ID
-
-```
-GET /api/households/1
-```
-
-### Get Month Data by Year and Chart ID
-
-```
-GET /api/monthes/2018/1
-```
-
-### Get Resource Data by Year and Chart ID
-
-```
-GET /api/resource/2018/1
-```
-
-### Get Households with Codes Data by Chart ID
-
-```
-GET /api/householdswithcodes/1
-```
-
-### Get Energy Consumption Data by Legend Code
-
-```
-GET /api/energyConsumption/code123
-```
-
-### Get Energy Consumption Data by Legend Sector
-
-```
-GET /api/getEnergyConsumptionBySector/code123
-```
-
-### Get Indicator Data by Name
-
-```
-GET /api/indicators/indicator_name
-```
-
-### Get Coal Supply Consumption by Year (in Terajoules)
-
-```
-GET /api/coalSupply/year/2023
-```
-
-### Get Coal Supply Consumption by Code and Year (in Terajoules)
-
-```
-GET /api/coalSupply/code/ABC123/year/2023
-```
-
-### Get Coal Supply Consumption by Year (in Tons)
-
-```
-GET /api/coalSupplyTons/year/2023
-```
-
-### Get Coal Supply Consumption by Code and Year (in Tons)
-
-```
-GET /api/coalSupplyTons/code/ABC123/year/2023
-```
-
-### Get Coal Supply Consumption in Tons of Oil by Year
-
-```
-GET /api/coalSupplyTonsOfOil/year/2023
-```
-
-### Get Coal Supply Consumption in Tons of Oil by Name and Year
-
-```
-GET /api/coalSupplyTonsOfOil/name/ABC123/year/2023
-```
+### Regions
+- **GET /api/regions**: Returns server status
 
 ## Error Handling
 
-If an error occurs, the API will return a JSON response with an error message and a status code of 500.
+The API uses a centralized error handling approach. If an error occurs, it will return a JSON response with an error message and an appropriate HTTP status code.
 
 ```json
 {
@@ -234,31 +60,33 @@ If an error occurs, the API will return a JSON response with an error message an
 }
 ```
 
+## Logging
+
+The application uses Winston for logging. Logs are stored in:
+- `error.log` - for error level logs
+- `combined.log` - for all logs
+
 ## Project Structure
 
 ```
-nrg-api/
-├── controllers/
-│   └── recordsController.js
-│   └── householdsController.js
-│   └── monthesController.js
-│   └── resourceController.js
-│   └── households_with_codesController.js
-│   └── energyConsumptionController.js
-│   └── energyConsumptionBySectorController.js
-│   └── energyProductionController.js
-│   └── indicatorsController.js
-│   └── coalSupplyController.js
-│   └── coalSupplyTonsController.js
-├── middleware/
-│   └── errorHandler.js
-│   └── validate.js
-├── routes/
+server/
+├── app.js                # Main application entry point
+├── db.js                 # Database connection configuration
+├── logger.js             # Logging configuration
+├── controllers/          # Request handlers for routes
+│   └── regionsController.js
+├── middleware/           # Express middleware
+│   ├── errorHandler.js   # Centralized error handling
+│   └── validate.js       # Request validation
+├── routes/               # API route definitions
 │   └── routes.js
-├── db.js
-├── logger.js
-├── app.js
-├── .env
-├── .env.example
-└── README.md
+└── .env                  # Environment variables (not in version control)
 ```
+
+## License
+
+[Include your license information here]
+
+## Last Updated
+
+April 24, 2025

@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import { regionsAPI } from '@/http/api';
 import { useI18n } from 'vue-i18n';
 
 export default {

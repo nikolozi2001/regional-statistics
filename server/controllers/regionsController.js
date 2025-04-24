@@ -1,31 +1,27 @@
-const { sql, poolPromise } = require("../db");
+const { pool } = require("../db");
+const logger = require("../logger");
 
 const getRegionById = async (req, res) => {
   const { id } = req.params;
   try {
-    const pool = await poolPromise;
-    const query = `SELECT * FROM regions WHERE ID = @id`;
-    const result = await pool
-      .request()
-      .input("id", sql.NVarChar, id)
-      .query(query);
-    res.json(result.recordset);
+    const query = `SELECT * FROM regions WHERE ID = ?`;
+    const [rows] = await pool.execute(query, [id]);
+    res.json(rows);
   } catch (err) {
-    console.error(`Error: ${err.message}`);
-    console.error(err);
+    logger.error(`Error in getRegionById: ${err.message}`);
+    logger.error(err);
     res.status(500).json({ error: err.message });
   }
 };
 
 const getAllRegions = async (req, res) => {
   try {
-    const pool = await poolPromise;
     const query = `SELECT * FROM regions`;
-    const result = await pool.request().query(query);
-    res.json(result.recordset);
+    const [rows] = await pool.execute(query);
+    res.json(rows);
   } catch (err) {
-    console.error(`Error: ${err.message}`);
-    console.error(err);
+    logger.error(`Error in getAllRegions: ${err.message}`);
+    logger.error(err);
     res.status(500).json({ error: err.message });
   }
 };

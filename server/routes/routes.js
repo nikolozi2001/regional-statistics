@@ -5,6 +5,7 @@ const router = express.Router();
 
 const regionsController = require("../controllers/regionsController");
 
+// Root API route
 router.get("/", (req, res) => {
   const readmePath = path.join(__dirname, "../README.md");
   fs.readFile(readmePath, "utf8", (err, data) => {
@@ -16,8 +17,18 @@ router.get("/", (req, res) => {
   });
 });
 
+// Health check route (redundant but helpful)
+router.get("/health", (req, res) => {
+  res.status(200).json({ status: 'OK', message: 'API is running' });
+});
+
+// Regions routes
 router.get("/regions/:id", regionsController.getRegionById);
 router.get("/regions", regionsController.getAllRegions);
 
+// Debug route to test API connection
+router.get("/test", (req, res) => {
+  res.status(200).json({ message: "API connection successful" });
+});
 
 module.exports = router;
