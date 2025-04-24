@@ -38,7 +38,7 @@
         <p class="d-inline-flex gap-1 mt-2 population-section">
             <a class="btn btn-primary" data-bs-toggle="collapse" :href="`#populationInfo-${regionId}`" role="button" :aria-expanded="isPopulationExpanded" 
                 :aria-controls="`populationInfo-${regionId}`" @click="togglePopulationExpand">
-                Population
+                {{ populationLabels && populationLabels[0] ? populationLabels[0].population : 'Population Information' }}
                 <span class="ms-1" v-if="isPopulationLoading"><i class="pi pi-spin pi-spinner"></i></span>
             </a>
         </p>
@@ -87,7 +87,6 @@ export default {
     setup(props) {
         const { locale } = useI18n();
         const basicInfoLabels = ref([]);
-        // Initialize with an empty array to prevent undefined errors
         const populationLabels = ref([]);
         const isBasicLoading = ref(false);
         const isPopulationLoading = ref(false);
@@ -119,15 +118,16 @@ export default {
         const togglePopulationExpand = () => {
             isPopulationExpanded.value = !isPopulationExpanded.value;
             
-            // Always try to fetch population data when expanding
+            // Always fetch population data when expanding, regardless of cache
             if (isPopulationExpanded.value) {
-                fetchPopulationInformation();
+                // Force refresh data when toggling
+                fetchPopulationInformation(true);
             }
         };
 
-        const fetchBasicInformation = async () => {
-            // Check if we have cached data for this locale
-            if (cachedData.value.basicInfo[locale.value]) {
+        const fetchBasicInformation = async (forceRefresh = false) => {
+            // Skip cache if forceRefresh is true
+            if (!forceRefresh && cachedData.value.basicInfo[locale.value]) {
                 basicInfoLabels.value = cachedData.value.basicInfo[locale.value];
                 return;
             }
@@ -138,6 +138,7 @@ export default {
             try {
                 // Use indicatorsEn API when language is English
                 const endpoint = `${API_BASE_URL}/${locale.value === 'en' ? 'indicatorsEn' : 'indicators'}/basicInformation`;
+                console.log(`Fetching basic info from: ${endpoint}`);
                 
                 const response = await axios.get(endpoint);
                 basicInfoLabels.value = response.data;
@@ -147,14 +148,16 @@ export default {
             } catch (err) {
                 console.error('Error fetching basic information:', err);
                 basicError.value = 'Failed to load data. Please try again later.';
+                // Reset data on error to avoid showing stale data
+                basicInfoLabels.value = [];
             } finally {
                 isBasicLoading.value = false;
             }
         };
 
-        const fetchPopulationInformation = async () => {
-            // Check if we have cached data for this locale
-            if (cachedData.value.population[locale.value]) {
+        const fetchPopulationInformation = async (forceRefresh = false) => {
+            // Skip cache if forceRefresh is true
+            if (!forceRefresh && cachedData.value.population[locale.value]) {
                 populationLabels.value = cachedData.value.population[locale.value];
                 return;
             }
@@ -165,6 +168,7 @@ export default {
             try {
                 // Fetch population data from the API
                 const endpoint = `${API_BASE_URL}/${locale.value === 'en' ? 'indicatorsEn' : 'indicators'}/population`;
+                console.log(`Fetching population from: ${endpoint}`);
                 
                 const response = await axios.get(endpoint);
                 populationLabels.value = response.data;
@@ -228,19 +232,38 @@ export default {
             return `/src/excels/reg/${lang}/${props.regionId}/${folder}/${fileName}`;
         };
 
+        const clearCache = () => {
+            // Clear cached data to force a fresh fetch
+            cachedData.value = {
+                basicInfo: {},
+                population: {}
+            };
+            
+            // Reset data refs
+            basicInfoLabels.value = [];
+            populationLabels.value = [];
+        };
+
         onMounted(() => {
             fetchBasicInformation();
             // Initialize populationLabels with an empty array to avoid undefined errors
             populationLabels.value = [];
         });
 
-        // Watch for language changes and refetch data when locale changes
-        watch(locale, () => {
-            fetchBasicInformation();
-            if (isPopulationExpanded.value) {
-                fetchPopulationInformation();
-            }
-        });
+        // Watch for language changes and refetch all data when locale changes
+        watch(locale, (newLocale, oldLocale) => {
+            console.log(`Language changed from ${oldLocale} to ${newLocale}`);
+            
+            // Clear the cache to force new data fetching
+            clearCache();
+            
+            // Always fetch basic information on language change with force refresh
+            fetchBasicInformation(true);
+            
+            // Always fetch population data on language change, even if not expanded
+            // This ensures data is ready when user expands the section
+            fetchPopulationInformation(true);
+        }, { immediate: true }); // immediate: true ensures it runs on component mount
 
         return { 
             locale,
