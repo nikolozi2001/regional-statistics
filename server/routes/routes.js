@@ -4,6 +4,8 @@ const path = require("path");
 const router = express.Router();
 
 const regionsController = require("../controllers/regionsController");
+const indicatorsController = require("../controllers/indicatorsController");
+const indicatorsEnController = require("../controllers/indicatorsEnController");
 
 // Root API route
 router.get("/", (req, res) => {
@@ -25,6 +27,8 @@ router.get("/health", (req, res) => {
 // Regions routes
 router.get("/regions/:id", regionsController.getRegionById);
 router.get("/regions", regionsController.getAllRegions);
+router.get("/indicators/:row", indicatorsController.getIndicatorRow);
+router.get("/indicatorsEn/:row", indicatorsEnController.getIndicatorRowEn);
 
 // Debug route to test API connection
 router.get("/test", (req, res) => {

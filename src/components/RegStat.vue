@@ -2,19 +2,19 @@
     <p class="d-inline-flex gap-1">
         <a class="btn btn-primary" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false"
             aria-controls="collapseExample">
-            Basic Information
+            {{ basicInfoLabels[0] ? basicInfoLabels[0].basicInformation : 'Basic Information' }}
         </a>
     </p>
     <div class="collapse" id="collapseExample">
         <div class="card card-body">
-            <p>area of the region
+            <p>{{ basicInfoLabels[1] ? basicInfoLabels[1].basicInformation : 'area of the region' }}
                 <span>
                     <a :href="areaFilePath" download>
                         <i class="pi pi-file-excel" style="font-size: 20px; margin-right: 5px;"></i>
                     </a>
                 </span>
             </p>
-            <p>Number of municipalities, cities and villages
+            <p>{{ basicInfoLabels[2] ? basicInfoLabels[2].basicInformation : 'Number of municipalities, cities and villages' }}
                 <span>
                     <a :href="settlementsFilePath" download>
                         <i class="pi pi-file-excel" style="font-size: 20px; margin-right: 5px;"></i>
@@ -28,6 +28,8 @@
 <script>
 import 'primeicons/primeicons.css';
 import { useI18n } from 'vue-i18n';
+import { ref, onMounted, watch } from 'vue';
+import axios from 'axios';
 
 export default {
     props: {
@@ -38,7 +40,32 @@ export default {
     },
     setup() {
         const { locale } = useI18n();
-        return { locale };
+        const basicInfoLabels = ref([]);
+
+        const fetchBasicInformation = async () => {
+            try {
+                // Use indicatorsEn API when language is English
+                const endpoint = locale.value === 'en' 
+                    ? 'http://localhost:3001/api/indicatorsEn/basicInformation' 
+                    : 'http://localhost:3001/api/indicators/basicInformation';
+                
+                const response = await axios.get(endpoint);
+                basicInfoLabels.value = response.data;
+            } catch (error) {
+                console.error('Error fetching basic information:', error);
+            }
+        };
+
+        onMounted(() => {
+            fetchBasicInformation();
+        });
+
+        // Watch for language changes and refetch data when locale changes
+        watch(locale, () => {
+            fetchBasicInformation();
+        });
+
+        return { locale, basicInfoLabels };
     },
     computed: {
         areaFilePath() {

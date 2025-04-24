@@ -4,8 +4,8 @@ const logger = require("../logger");
 const getRegionById = async (req, res) => {
   const { id } = req.params;
   try {
-    const query = `SELECT * FROM regions WHERE ID = ?`;
-    const [rows] = await pool.execute(query, [id]);
+    const query = `SELECT * FROM regions WHERE ID = ${id}`;
+    const [rows] = await pool.execute(query);
     res.json(rows);
   } catch (err) {
     logger.error(`Error in getRegionById: ${err.message}`);
