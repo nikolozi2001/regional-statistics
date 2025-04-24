@@ -48,6 +48,18 @@ export const regionsAPI = {
   delete: async (id) => apiRequest("delete", `/regions/${id}`),
 };
 
+// API function for file uploads
+export const uploadsAPI = {
+  uploadFile: async (formData) => {
+    const api = await apiPromise;
+    return api.post("/upload", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+  },
+};
+
 // Debug function to directly test API connectivity
 export const testApiConnection = async () => {
   try {
