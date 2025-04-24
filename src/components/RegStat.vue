@@ -1,66 +1,68 @@
 <template>
-    <p class="d-inline-flex gap-1">
-        <a class="btn btn-primary" data-bs-toggle="collapse" :href="`#basicInfo-${regionId}`" role="button" :aria-expanded="isBasicExpanded" 
-            :aria-controls="`basicInfo-${regionId}`" @click="toggleBasicExpand">
-            {{ basicInfoLabels && basicInfoLabels[0] ? basicInfoLabels[0].basicInformation : 'Basic Information' }}
-            <span class="ms-1" v-if="isBasicLoading"><i class="pi pi-spin pi-spinner"></i></span>
-        </a>
-    </p>
-    <div class="collapse" :id="`basicInfo-${regionId}`">
-        <div class="card card-body">
-            <div v-if="basicError" class="alert alert-danger" role="alert">
-                {{ basicError }}
-            </div>
-            <div v-if="isBasicLoading" class="text-center">
-                <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
-            </div>
-            <div v-else>
-                <p>{{ basicInfoLabels && basicInfoLabels[1] ? basicInfoLabels[1].basicInformation : 'Area of the region' }}
-                    <span>
-                        <a :href="getFilePath('area')" download title="Download Excel file">
-                            <i class="pi pi-file-excel" style="font-size: 20px; margin-right: 5px;"></i>
-                        </a>
-                    </span>
-                </p>
-                <p>{{ basicInfoLabels && basicInfoLabels[2] ? basicInfoLabels[2].basicInformation : 'Number of municipalities, cities and villages' }}
-                    <span>
-                        <a :href="getFilePath('settlements')" download title="Download Excel file">
-                            <i class="pi pi-file-excel" style="font-size: 20px; margin-right: 5px;"></i>
-                        </a>
-                    </span>
-                </p>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Population Information Section -->
-    <p class="d-inline-flex gap-1 mt-2">
-        <a class="btn btn-primary" data-bs-toggle="collapse" :href="`#populationInfo-${regionId}`" role="button" :aria-expanded="isPopulationExpanded" 
-            :aria-controls="`populationInfo-${regionId}`" @click="togglePopulationExpand">
-            {{ populationLabels && populationLabels[0] ? populationLabels[0].population : 'Population Information' }}
-            <span class="ms-1" v-if="isPopulationLoading"><i class="pi pi-spin pi-spinner"></i></span>
-        </a>
-    </p>
-    <div class="collapse" :id="`populationInfo-${regionId}`">
-        <div class="card card-body">
-            <div v-if="populationError" class="alert alert-danger" role="alert">
-                {{ populationError }}
-            </div>
-            <div v-if="isPopulationLoading" class="text-center">
-                <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
-            </div>
-            <div v-else>
-                <template v-if="populationData.length > 0">
-                    <p v-for="(item, index) in populationData" :key="index">
-                        {{ item.population }}
+    <div class="regions-info-container">
+        <p class="d-inline-flex gap-1">
+            <a class="btn btn-primary" data-bs-toggle="collapse" :href="`#basicInfo-${regionId}`" role="button" :aria-expanded="isBasicExpanded" 
+                :aria-controls="`basicInfo-${regionId}`" @click="toggleBasicExpand">
+                {{ basicInfoLabels && basicInfoLabels[0] ? basicInfoLabels[0].basicInformation : 'Basic Information' }}
+                <span class="ms-1" v-if="isBasicLoading"><i class="pi pi-spin pi-spinner"></i></span>
+            </a>
+        </p>
+        <div class="collapse" :id="`basicInfo-${regionId}`">
+            <div class="card card-body">
+                <div v-if="basicError" class="alert alert-danger" role="alert">
+                    {{ basicError }}
+                </div>
+                <div v-if="isBasicLoading" class="text-center">
+                    <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+                </div>
+                <div v-else>
+                    <p>{{ basicInfoLabels && basicInfoLabels[1] ? basicInfoLabels[1].basicInformation : 'Area of the region' }}
                         <span>
-                            <a :href="getPopulationFilePath(index + 1)" download title="Download Excel file">
+                            <a :href="getFilePath('area')" download title="Download Excel file">
                                 <i class="pi pi-file-excel" style="font-size: 20px; margin-right: 5px;"></i>
                             </a>
                         </span>
                     </p>
-                </template>
-                <p v-else>No population data available.</p>
+                    <p>{{ basicInfoLabels && basicInfoLabels[2] ? basicInfoLabels[2].basicInformation : 'Number of municipalities, cities and villages' }}
+                        <span>
+                            <a :href="getFilePath('settlements')" download title="Download Excel file">
+                                <i class="pi pi-file-excel" style="font-size: 20px; margin-right: 5px;"></i>
+                            </a>
+                        </span>
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Population Information Section -->
+        <p class="d-inline-flex gap-1 mt-2 population-section">
+            <a class="btn btn-primary" data-bs-toggle="collapse" :href="`#populationInfo-${regionId}`" role="button" :aria-expanded="isPopulationExpanded" 
+                :aria-controls="`populationInfo-${regionId}`" @click="togglePopulationExpand">
+                Population
+                <span class="ms-1" v-if="isPopulationLoading"><i class="pi pi-spin pi-spinner"></i></span>
+            </a>
+        </p>
+        <div class="collapse" :id="`populationInfo-${regionId}`">
+            <div class="card card-body">
+                <div v-if="populationError" class="alert alert-danger" role="alert">
+                    {{ populationError }}
+                </div>
+                <div v-if="isPopulationLoading" class="text-center">
+                    <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+                </div>
+                <div v-else>
+                    <template v-if="populationData.length > 0">
+                        <p v-for="(item, index) in populationData" :key="index">
+                            {{ item.population }}
+                            <span>
+                                <a :href="getPopulationFilePath(index + 1)" download title="Download Excel file">
+                                    <i class="pi pi-file-excel" style="font-size: 20px; margin-right: 5px;"></i>
+                                </a>
+                            </span>
+                        </p>
+                    </template>
+                    <p v-else>No population data available.</p>
+                </div>
             </div>
         </div>
     </div>
@@ -267,5 +269,13 @@ export default {
 }
 .alert {
     margin-top: 0.5rem;
+}
+.regions-info-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+.population-section {
+    margin-top: 1rem;
 }
 </style>
