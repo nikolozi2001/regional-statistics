@@ -66,6 +66,38 @@
             </div>
         </div>
 
+        <!-- Population Description Section -->
+        <p class="d-inline-flex gap-1 mt-2 population-description-section">
+            <a class="btn btn-primary" data-bs-toggle="collapse" :href="`#populationDescriptionInfo-${regionId}`" role="button" :aria-expanded="isPopulationDescriptionExpanded" 
+                :aria-controls="`populationDescriptionInfo-${regionId}`" @click="togglePopulationDescriptionExpand">
+                {{ populationDescriptionLabels && populationDescriptionLabels[0] ? populationDescriptionLabels[0].populationDescription : 'Population Description' }}
+                <span class="ms-1" v-if="isPopulationDescriptionLoading"><i class="pi pi-spin pi-spinner"></i></span>
+            </a>
+        </p>
+        <div class="collapse" :id="`populationDescriptionInfo-${regionId}`">
+            <div class="card card-body">
+                <div v-if="populationDescriptionError" class="alert alert-danger" role="alert">
+                    {{ populationDescriptionError }}
+                </div>
+                <div v-if="isPopulationDescriptionLoading" class="text-center">
+                    <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+                </div>
+                <div v-else>
+                    <template v-if="populationDescriptionData.length > 0">
+                        <p v-for="(item, index) in populationDescriptionData" :key="index">
+                            {{ item.populationDescription }}
+                            <span>
+                                <a :href="getPopulationDescriptionFilePath(index + 1)" download title="Download Excel file">
+                                    <i class="pi pi-file-excel" style="font-size: 20px; margin-right: 5px;"></i>
+                                </a>
+                            </span>
+                        </p>
+                    </template>
+                    <p v-else>No population description data available.</p>
+                </div>
+            </div>
+        </div>
+
         <!-- Birth Information Section -->
         <p class="d-inline-flex gap-1 mt-2 birth-section">
             <a class="btn btn-primary" data-bs-toggle="collapse" :href="`#birthInfo-${regionId}`" role="button" :aria-expanded="isBirthExpanded" 
@@ -193,6 +225,38 @@
                 </div>
             </div>
         </div>
+
+        <!-- Divorce Information Section -->
+        <p class="d-inline-flex gap-1 mt-2 divorce-section">
+            <a class="btn btn-primary" data-bs-toggle="collapse" :href="`#divorceInfo-${regionId}`" role="button" :aria-expanded="isDivorceExpanded" 
+                :aria-controls="`divorceInfo-${regionId}`" @click="toggleDivorceExpand">
+                {{ divorceLabels && divorceLabels[0] ? divorceLabels[0].divorce : 'Divorce Information' }}
+                <span class="ms-1" v-if="isDivorceLoading"><i class="pi pi-spin pi-spinner"></i></span>
+            </a>
+        </p>
+        <div class="collapse" :id="`divorceInfo-${regionId}`">
+            <div class="card card-body">
+                <div v-if="divorceError" class="alert alert-danger" role="alert">
+                    {{ divorceError }}
+                </div>
+                <div v-if="isDivorceLoading" class="text-center">
+                    <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+                </div>
+                <div v-else>
+                    <template v-if="divorceData.length > 0">
+                        <p v-for="(item, index) in divorceData" :key="index">
+                            {{ item.divorce }}
+                            <span>
+                                <a :href="getDivorceFilePath(index + 1)" download title="Download Excel file">
+                                    <i class="pi pi-file-excel" style="font-size: 20px; margin-right: 5px;"></i>
+                                </a>
+                            </span>
+                        </p>
+                    </template>
+                    <p v-else>No divorce data available.</p>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -216,35 +280,44 @@ export default {
         const { locale } = useI18n();
         const basicInfoLabels = ref([]);
         const populationLabels = ref([]);
+        const populationDescriptionLabels = ref([]);
         const birthLabels = ref([]);
         const deathLabels = ref([]);
         const naturalIncreaseLabels = ref([]);
         const marriageLabels = ref([]);
+        const divorceLabels = ref([]);
         const isBasicLoading = ref(false);
         const isPopulationLoading = ref(false);
+        const isPopulationDescriptionLoading = ref(false);
         const isBirthLoading = ref(false);
         const isDeathLoading = ref(false);
         const isNaturalIncreaseLoading = ref(false);
         const isMarriageLoading = ref(false);
+        const isDivorceLoading = ref(false);
         const basicError = ref(null);
         const populationError = ref(null);
+        const populationDescriptionError = ref(null);
         const birthError = ref(null);
         const deathError = ref(null);
         const naturalIncreaseError = ref(null);
         const marriageError = ref(null);
+        const divorceError = ref(null);
         const isBasicExpanded = ref(false);
         const isPopulationExpanded = ref(false);
+        const isPopulationDescriptionExpanded = ref(false);
         const isBirthExpanded = ref(false);
         const isDeathExpanded = ref(false);
         const isNaturalIncreaseExpanded = ref(false);
         const isMarriageExpanded = ref(false);
+        const isDivorceExpanded = ref(false);
         const cachedData = ref({
             basicInfo: {},
             population: {},
             birth: {},
             death: {},
             naturalIncrease: {},
-            marriage: {}
+            marriage: {},
+            divorce: {}
         });
 
         // Computed property to safely filter and extract population data
@@ -307,6 +380,30 @@ export default {
                 .filter(item => item && item.marriage !== null);
         });
 
+        // Computed property to safely filter and extract divorce data
+        const divorceData = computed(() => {
+            if (!divorceLabels.value || divorceLabels.value.length === 0) {
+                return [];
+            }
+            
+            // Filter out empty items and return only the ones with divorce data
+            return divorceLabels.value
+                .slice(1, 8)  // Get the first 7 items after the title (adjust as needed)
+                .filter(item => item && item.divorce !== null);
+        });
+
+        // Computed property to safely filter and extract population description data
+        const populationDescriptionData = computed(() => {
+            if (!populationDescriptionLabels.value || populationDescriptionLabels.value.length === 0) {
+                return [];
+            }
+            
+            // Filter out empty items and return only the ones with population description data
+            return populationDescriptionLabels.value
+                .slice(1, 8)  // Get the first 7 items after the title (adjust as needed)
+                .filter(item => item && item.populationDescription !== null);
+        });
+
         const toggleBasicExpand = () => {
             isBasicExpanded.value = !isBasicExpanded.value;
         };
@@ -358,6 +455,26 @@ export default {
             if (isMarriageExpanded.value) {
                 // Force refresh data when toggling
                 fetchMarriageInformation(true);
+            }
+        };
+
+        const toggleDivorceExpand = () => {
+            isDivorceExpanded.value = !isDivorceExpanded.value;
+            
+            // Always fetch divorce data when expanding, regardless of cache
+            if (isDivorceExpanded.value) {
+                // Force refresh data when toggling
+                fetchDivorceInformation(true);
+            }
+        };
+
+        const togglePopulationDescriptionExpand = () => {
+            isPopulationDescriptionExpanded.value = !isPopulationDescriptionExpanded.value;
+            
+            // Always fetch population description data when expanding, regardless of cache
+            if (isPopulationDescriptionExpanded.value) {
+                // Force refresh data when toggling
+                fetchPopulationDescriptionInformation(true);
             }
         };
 
@@ -540,6 +657,69 @@ export default {
             }
         };
 
+        const fetchDivorceInformation = async (forceRefresh = false) => {
+            // Skip cache if forceRefresh is true
+            if (!forceRefresh && cachedData.value.divorce[locale.value]) {
+                divorceLabels.value = cachedData.value.divorce[locale.value];
+                return;
+            }
+
+            isDivorceLoading.value = true;
+            divorceError.value = null;
+            
+            try {
+                // Fetch divorce data from the API
+                const endpoint = `${API_BASE_URL}/${locale.value === 'en' ? 'indicatorsEn' : 'indicators'}/divorce`;
+                
+                const response = await axios.get(endpoint);
+                divorceLabels.value = response.data;
+                
+                // Cache the response by language
+                cachedData.value.divorce[locale.value] = response.data;
+            } catch (err) {
+                console.error('Error fetching divorce information:', err);
+                divorceError.value = 'Failed to load data. Please try again later.';
+                
+                // Set empty array on error to avoid undefined errors
+                divorceLabels.value = [];
+            } finally {
+                isDivorceLoading.value = false;
+            }
+        };
+
+        const fetchPopulationDescriptionInformation = async (forceRefresh = false) => {
+            // Skip cache if forceRefresh is true
+            if (!forceRefresh && cachedData.value.populationDescription && cachedData.value.populationDescription[locale.value]) {
+                populationDescriptionLabels.value = cachedData.value.populationDescription[locale.value];
+                return;
+            }
+
+            isPopulationDescriptionLoading.value = true;
+            populationDescriptionError.value = null;
+            
+            try {
+                // Fetch population description data from the API
+                const endpoint = `${API_BASE_URL}/${locale.value === 'en' ? 'indicatorsEn' : 'indicators'}/populationDescription`;
+                
+                const response = await axios.get(endpoint);
+                populationDescriptionLabels.value = response.data;
+                
+                // Cache the response by language
+                if (!cachedData.value.populationDescription) {
+                    cachedData.value.populationDescription = {};
+                }
+                cachedData.value.populationDescription[locale.value] = response.data;
+            } catch (err) {
+                console.error('Error fetching population description information:', err);
+                populationDescriptionError.value = 'Failed to load data. Please try again later.';
+                
+                // Set empty array on error to avoid undefined errors
+                populationDescriptionLabels.value = [];
+            } finally {
+                isPopulationDescriptionLoading.value = false;
+            }
+        };
+
         /**
          * Generates a file path based on file type and current language
          * @param {string} fileType - Type of file (area or settlements)
@@ -578,6 +758,30 @@ export default {
                     break;
                 case 3:
                     fileName = lang === 'ka' ? 'mosaxleobis simchidrove.xlsx' : 'population_density.xlsx';
+                    break;
+                default:
+                    fileName = 'data.xlsx';
+            }
+            
+            return `/src/excels/reg/${lang}/${props.regionId}/${folder}/${fileName}`;
+        };
+
+        /**
+         * Generates a file path for population description files
+         * @param {number} index - Index of the population description data item
+         * @returns {string} Path to the file
+         */
+        const getPopulationDescriptionFilePath = (index) => {
+            const lang = locale.value === 'ka' ? 'ka' : 'en';
+            const folder = lang === 'ka' ? 'demografia' : 'demography';
+            
+            let fileName;
+            switch(index) {
+                case 1:
+                    fileName = lang === 'ka' ? 'mosaxleobis gamocdileba.xlsx' : 'population_description.xlsx';
+                    break;
+                case 2:
+                    fileName = lang === 'ka' ? 'qalaqis mosaxleobis gamocdileba.xlsx' : 'urban_population_description.xlsx';
                     break;
                 default:
                     fileName = 'data.xlsx';
@@ -694,6 +898,33 @@ export default {
             return `/src/excels/reg/${lang}/${props.regionId}/${folder}/${fileName}`;
         };
 
+        /**
+         * Generates a file path for divorce files
+         * @param {number} index - Index of the divorce data item
+         * @returns {string} Path to the file
+         */
+        const getDivorceFilePath = (index) => {
+            const lang = locale.value === 'ka' ? 'ka' : 'en';
+            const folder = lang === 'ka' ? 'demografia' : 'demography';
+            
+            let fileName;
+            switch(index) {
+                case 1:
+                    fileName = lang === 'ka' ? 'gamosaxulebuli ricxovnoba.xlsx' : 'divorces.xlsx';
+                    break;
+                case 2:
+                    fileName = lang === 'ka' ? 'qalaqis gamosaxulebis cili.xlsx' : 'urban_divorces.xlsx';
+                    break;
+                case 3:
+                    fileName = lang === 'ka' ? 'gamosaxlebis simchidrove.xlsx' : 'divorce_density.xlsx';
+                    break;
+                default:
+                    fileName = 'data.xlsx';
+            }
+            
+            return `/src/excels/reg/${lang}/${props.regionId}/${folder}/${fileName}`;
+        };
+
         const clearCache = () => {
             // Clear cached data to force a fresh fetch
             cachedData.value = {
@@ -702,7 +933,8 @@ export default {
                 birth: {},
                 death: {},
                 naturalIncrease: {},
-                marriage: {}
+                marriage: {},
+                divorce: {}
             };
             
             // Reset data refs
@@ -712,6 +944,7 @@ export default {
             deathLabels.value = [];
             naturalIncreaseLabels.value = [];
             marriageLabels.value = [];
+            divorceLabels.value = [];
         };
 
         onMounted(() => {
@@ -726,6 +959,8 @@ export default {
             naturalIncreaseLabels.value = [];
             // Initialize marriageLabels with an empty array to avoid undefined errors
             marriageLabels.value = [];
+            // Initialize divorceLabels with an empty array to avoid undefined errors
+            divorceLabels.value = [];
         });
 
         // Watch for language changes and refetch all data when locale changes
@@ -756,51 +991,69 @@ export default {
             // Always fetch marriage data on language change, even if not expanded
             // This ensures data is ready when user expands the section
             fetchMarriageInformation(true);
+
+            // Always fetch divorce data on language change, even if not expanded
+            // This ensures data is ready when user expands the section
+            fetchDivorceInformation(true);
         }, { immediate: true }); // immediate: true ensures it runs on component mount
 
         return { 
             locale,
             basicInfoLabels,
             populationLabels,
+            populationDescriptionLabels,
             birthLabels,
             deathLabels,
             naturalIncreaseLabels,
             marriageLabels,
+            divorceLabels,
             populationData,
+            populationDescriptionData,
             birthData,
             deathData,
             naturalIncreaseData,
             marriageData,
+            divorceData,
             isBasicLoading,
             isPopulationLoading,
+            isPopulationDescriptionLoading,
             isBirthLoading,
             isDeathLoading,
             isNaturalIncreaseLoading,
             isMarriageLoading,
+            isDivorceLoading,
             basicError,
             populationError,
+            populationDescriptionError,
             birthError,
             deathError,
             naturalIncreaseError,
             marriageError,
+            divorceError,
             isBasicExpanded,
             isPopulationExpanded,
+            isPopulationDescriptionExpanded,
             isBirthExpanded,
             isDeathExpanded,
             isNaturalIncreaseExpanded,
             isMarriageExpanded,
+            isDivorceExpanded,
             toggleBasicExpand,
             togglePopulationExpand,
+            togglePopulationDescriptionExpand,
             toggleBirthExpand,
             toggleDeathExpand,
             toggleNaturalIncreaseExpand,
             toggleMarriageExpand,
+            toggleDivorceExpand,
             getFilePath,
             getPopulationFilePath,
+            getPopulationDescriptionFilePath,
             getBirthFilePath,
             getDeathFilePath,
             getNaturalIncreaseFilePath,
-            getMarriageFilePath
+            getMarriageFilePath,
+            getDivorceFilePath
         };
     }
 };
@@ -832,6 +1085,9 @@ export default {
     margin-top: 1rem;
 }
 .marriage-section {
+    margin-top: 1rem;
+}
+.divorce-section {
     margin-top: 1rem;
 }
 </style>
