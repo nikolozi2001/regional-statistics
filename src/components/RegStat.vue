@@ -2,13 +2,12 @@
     <div class="regions-info-container" v-if="componentsReady">
         <!-- Basic Information Section -->
         <p class="d-inline-flex gap-1">
-            <a class="btn btn-primary" data-bs-toggle="collapse" :href="`#basicInfo-${regionId}`" role="button" :aria-expanded="isBasicExpanded" 
-                :aria-controls="`basicInfo-${regionId}`" @click="toggleBasicExpand">
+            <a class="btn btn-primary" @click.prevent="toggleBasicExpand">
                 {{ basicInfoLabels && basicInfoLabels[0] ? basicInfoLabels[0].basicInformation : 'Basic Information' }}
                 <span class="ms-1" v-if="isBasicLoading"><i class="pi pi-spin pi-spinner"></i></span>
             </a>
         </p>
-        <div class="collapse" :id="`basicInfo-${regionId}`">
+        <div :class="['collapse', {'show': isBasicExpanded}]" :id="`basicInfo-${regionId}`">
             <div class="card card-body">
                 <div v-if="basicError" class="alert alert-danger" role="alert">
                     {{ basicError }}
@@ -37,13 +36,12 @@
         
         <!-- Demography Main Section -->
         <p class="d-inline-flex gap-1 mt-2 demography-section">
-            <a class="btn btn-primary" data-bs-toggle="collapse" :href="`#demographyInfo-${regionId}`" role="button" :aria-expanded="isDemographyExpanded" 
-                :aria-controls="`demographyInfo-${regionId}`" @click="toggleDemographyExpand">
+            <a class="btn btn-primary" @click.prevent="toggleDemographyExpand">
                 {{ 'Demography' }}
                 <span class="ms-1" v-if="isDemographyLoading"><i class="pi pi-spin pi-spinner"></i></span>
             </a>
         </p>
-        <div class="collapse" :id="`demographyInfo-${regionId}`">
+        <div :class="['collapse', {'show': isDemographyExpanded}]" :id="`demographyInfo-${regionId}`">
             <div class="card card-body">
                 <div v-if="isDemographyLoading" class="text-center">
                     <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
@@ -51,13 +49,12 @@
                 <div v-else>
                     <!-- Population Information Section -->
                     <p class="d-inline-flex gap-1 mt-2 population-section">
-                        <a class="btn btn-secondary" data-bs-toggle="collapse" :href="`#populationInfo-${regionId}`" role="button" :aria-expanded="isPopulationExpanded" 
-                            :aria-controls="`populationInfo-${regionId}`" @click="togglePopulationExpand">
+                        <a class="btn btn-secondary" @click.prevent="togglePopulationExpand">
                             {{ populationLabels && populationLabels[0] ? populationLabels[0].population : 'Population Information' }}
                             <span class="ms-1" v-if="isPopulationLoading"><i class="pi pi-spin pi-spinner"></i></span>
                         </a>
                     </p>
-                    <div class="collapse" :id="`populationInfo-${regionId}`">
+                    <div :class="['collapse', {'show': isPopulationExpanded}]" :id="`populationInfo-${regionId}`">
                         <div class="card card-body">
                             <div v-if="populationError" class="alert alert-danger" role="alert">
                                 {{ populationError }}
@@ -83,13 +80,12 @@
 
                     <!-- Population Description Section -->
                     <p class="d-inline-flex gap-1 mt-2 population-description-section">
-                        <a class="btn btn-secondary" data-bs-toggle="collapse" :href="`#populationDescriptionInfo-${regionId}`" role="button" :aria-expanded="isPopulationDescriptionExpanded" 
-                            :aria-controls="`populationDescriptionInfo-${regionId}`" @click="togglePopulationDescriptionExpand">
+                        <a class="btn btn-secondary" @click.prevent="togglePopulationDescriptionExpand">
                             {{ populationDescriptionLabels && populationDescriptionLabels[0] ? populationDescriptionLabels[0].populationDescription : 'Population Description' }}
                             <span class="ms-1" v-if="isPopulationDescriptionLoading"><i class="pi pi-spin pi-spinner"></i></span>
                         </a>
                     </p>
-                    <div class="collapse" :id="`populationDescriptionInfo-${regionId}`">
+                    <div class="collapse" :class="{ show: isPopulationDescriptionExpanded }" :id="`populationDescriptionInfo-${regionId}`">
                         <div class="card card-body">
                             <div v-if="populationDescriptionError" class="alert alert-danger" role="alert">
                                 {{ populationDescriptionError }}
@@ -115,13 +111,12 @@
 
                     <!-- Birth Information Section -->
                     <p class="d-inline-flex gap-1 mt-2 birth-section">
-                        <a class="btn btn-secondary" data-bs-toggle="collapse" :href="`#birthInfo-${regionId}`" role="button" :aria-expanded="isBirthExpanded" 
-                            :aria-controls="`birthInfo-${regionId}`" @click="toggleBirthExpand">
+                        <a class="btn btn-secondary" @click.prevent="toggleBirthExpand">
                             {{ birthLabels && birthLabels[0] ? birthLabels[0].birth : 'Birth Information' }}
                             <span class="ms-1" v-if="isBirthLoading"><i class="pi pi-spin pi-spinner"></i></span>
                         </a>
                     </p>
-                    <div class="collapse" :id="`birthInfo-${regionId}`">
+                    <div :class="['collapse', {'show': isBirthExpanded}]" :id="`birthInfo-${regionId}`">
                         <div class="card card-body">
                             <div v-if="birthError" class="alert alert-danger" role="alert">
                                 {{ birthError }}
@@ -147,13 +142,12 @@
 
                     <!-- Death Information Section -->
                     <p class="d-inline-flex gap-1 mt-2 death-section">
-                        <a class="btn btn-secondary" data-bs-toggle="collapse" :href="`#deathInfo-${regionId}`" role="button" :aria-expanded="isDeathExpanded" 
-                            :aria-controls="`deathInfo-${regionId}`" @click="toggleDeathExpand">
+                        <a class="btn btn-secondary" @click.prevent="toggleDeathExpand">
                             {{ deathLabels && deathLabels[0] ? deathLabels[0].death : 'Death Information' }}
                             <span class="ms-1" v-if="isDeathLoading"><i class="pi pi-spin pi-spinner"></i></span>
                         </a>
                     </p>
-                    <div class="collapse" :id="`deathInfo-${regionId}`">
+                    <div :class="['collapse', {'show': isDeathExpanded}]" :id="`deathInfo-${regionId}`">
                         <div class="card card-body">
                             <div v-if="deathError" class="alert alert-danger" role="alert">
                                 {{ deathError }}
@@ -179,13 +173,12 @@
 
                     <!-- Natural Increase Information Section -->
                     <p class="d-inline-flex gap-1 mt-2 natural-increase-section">
-                        <a class="btn btn-secondary" data-bs-toggle="collapse" :href="`#naturalIncreaseInfo-${regionId}`" role="button" :aria-expanded="isNaturalIncreaseExpanded" 
-                            :aria-controls="`naturalIncreaseInfo-${regionId}`" @click="toggleNaturalIncreaseExpand">
+                        <a class="btn btn-secondary" @click.prevent="toggleNaturalIncreaseExpand">
                             {{ naturalIncreaseLabels && naturalIncreaseLabels[0] ? naturalIncreaseLabels[0].naturalIncrease : 'Natural Increase Information' }}
                             <span class="ms-1" v-if="isNaturalIncreaseLoading"><i class="pi pi-spin pi-spinner"></i></span>
                         </a>
                     </p>
-                    <div class="collapse" :id="`naturalIncreaseInfo-${regionId}`">
+                    <div class="collapse" :class="{ show: isNaturalIncreaseExpanded }" :id="`naturalIncreaseInfo-${regionId}`">
                         <div class="card card-body">
                             <div v-if="naturalIncreaseError" class="alert alert-danger" role="alert">
                                 {{ naturalIncreaseError }}
@@ -211,13 +204,12 @@
 
                     <!-- Marriage Information Section -->
                     <p class="d-inline-flex gap-1 mt-2 marriage-section">
-                        <a class="btn btn-secondary" data-bs-toggle="collapse" :href="`#marriageInfo-${regionId}`" role="button" :aria-expanded="isMarriageExpanded" 
-                            :aria-controls="`marriageInfo-${regionId}`" @click="toggleMarriageExpand">
+                        <a class="btn btn-secondary" @click.prevent="toggleMarriageExpand">
                             {{ marriageLabels && marriageLabels[0] ? marriageLabels[0].marriage : 'Marriage Information' }}
                             <span class="ms-1" v-if="isMarriageLoading"><i class="pi pi-spin pi-spinner"></i></span>
                         </a>
                     </p>
-                    <div class="collapse" :id="`marriageInfo-${regionId}`">
+                    <div class="collapse" :class="{ show: isMarriageExpanded }" :id="`marriageInfo-${regionId}`">
                         <div class="card card-body">
                             <div v-if="marriageError" class="alert alert-danger" role="alert">
                                 {{ marriageError }}
@@ -243,13 +235,12 @@
 
                     <!-- Divorce Information Section -->
                     <p class="d-inline-flex gap-1 mt-2 divorce-section">
-                        <a class="btn btn-secondary" data-bs-toggle="collapse" :href="`#divorceInfo-${regionId}`" role="button" :aria-expanded="isDivorceExpanded" 
-                            :aria-controls="`divorceInfo-${regionId}`" @click="toggleDivorceExpand">
+                        <a class="btn btn-secondary" @click.prevent="toggleDivorceExpand">
                             {{ divorceLabels && divorceLabels[0] ? divorceLabels[0].divorce : 'Divorce Information' }}
                             <span class="ms-1" v-if="isDivorceLoading"><i class="pi pi-spin pi-spinner"></i></span>
                         </a>
                     </p>
-                    <div class="collapse" :id="`divorceInfo-${regionId}`">
+                    <div class="collapse" :class="{ show: isDivorceExpanded }" :id="`divorceInfo-${regionId}`">
                         <div class="card card-body">
                             <div v-if="divorceError" class="alert alert-danger" role="alert">
                                 {{ divorceError }}
@@ -992,18 +983,18 @@ export default {
 
         onMounted(() => {
             fetchBasicInformation();
-            // Initialize populationLabels with an empty array to avoid undefined errors
+            // Initialize labels with empty arrays to avoid undefined errors
             populationLabels.value = [];
-            // Initialize birthLabels with an empty array to avoid undefined errors
+            populationDescriptionLabels.value = [];
             birthLabels.value = [];
-            // Initialize deathLabels with an empty array to avoid undefined errors
             deathLabels.value = [];
-            // Initialize naturalIncreaseLabels with an empty array to avoid undefined errors
             naturalIncreaseLabels.value = [];
-            // Initialize marriageLabels with an empty array to avoid undefined errors
             marriageLabels.value = [];
-            // Initialize divorceLabels with an empty array to avoid undefined errors
             divorceLabels.value = [];
+            
+            // Initial fetch of population description data
+            fetchPopulationDescriptionInformation();
+            
             // Set componentsReady to true to allow rendering of the template
             componentsReady.value = true;
         });
@@ -1020,6 +1011,10 @@ export default {
             // Always fetch population data on language change, even if not expanded
             // This ensures data is ready when user expands the section
             fetchPopulationInformation(true);
+            
+            // Always fetch population description data on language change
+            // This ensures data is ready when user expands the section
+            fetchPopulationDescriptionInformation(true);
 
             // Always fetch birth data on language change, even if not expanded
             // This ensures data is ready when user expands the section
@@ -1121,22 +1116,34 @@ export default {
     flex-direction: column;
     width: 100%;
 }
-.population-section {
-    margin-top: 1rem;
+/* General styles for all collapsible sections */
+.collapse {
+    width: 100%;
+    display: none; /* Changed from display: block to correctly hide collapsed content */
+    margin-bottom: 1rem;
 }
-.birth-section {
-    margin-top: 1rem;
+/* When the section is expanded, show it */
+.collapse.show {
+    display: block;
 }
-.death-section {
-    margin-top: 1rem;
+/* Make p elements containing buttons full width */
+.d-inline-flex {
+    width: 100%;
+    display: block !important;
 }
-.natural-increase-section {
-    margin-top: 1rem;
+/* Ensure buttons take full width on mobile */
+.btn {
+    text-align: left;
 }
-.marriage-section {
+.population-section,
+.population-description-section, 
+.birth-section,
+.death-section,
+.natural-increase-section,
+.marriage-section,
+.divorce-section,
+.demography-section {
     margin-top: 1rem;
-}
-.divorce-section {
-    margin-top: 1rem;
+    width: 100%;
 }
 </style>
